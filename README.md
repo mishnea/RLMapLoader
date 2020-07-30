@@ -18,7 +18,9 @@ The GUI has two entry fields, labeled 'Workshop dir' and 'Mods dir'. The text in
 
 ### Swapping maps
 Given the directories are valid, selecting the desired '.udk' from the list followed by clicking 'Activate' will copy the file from the workshop folder to the mods folder, as "Labs_Underpass_P.upk". Any existing file with that name is simply overwritten.\
-*intend to add a button in future for deleting "Labs_Underpass_P.upk" altogether, allowing the real Underpass to be loaded*
+
+### Restoring Underpass
+Clicking 'Restore Underpass' will delete the existing 'Labs_Underpass_P.upk' within mods, allowing RL to load Underpass. This is independent of the workshop path but requires the correct mods path.
 
 ## Requirements
 - Python 3.8 or higher
