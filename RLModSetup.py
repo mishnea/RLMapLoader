@@ -70,6 +70,11 @@ def multi(*funcs):
     return many_func
 
 
+def cleanpath(path):
+    basename, split = os.path.basename, os.path.split
+    return path if basename(path) else split(path)[0]
+
+
 MODS_DIR = ""
 WORKSHOP_DIR = ""
 
@@ -103,18 +108,39 @@ class MainApp(tk.Frame):
             widget.config(fg="Red")
 
     def copytolabs(self):
+        if not self.widgets["lb_wkfiles"].curselection():
+            msg.showerror("Can't activate", "No map selected")
+            return
         index = self.widgets["lb_wkfiles"].curselection()[0]
         name, path = list(self.wkfiles.items())[index]
         src = os.path.join(path, name)
-        dest = self.mods_dir.get()
+        dest = cleanpath(self.mods_dir.get())
         if os.path.isdir(dest):
+            if os.path.basename(dest) != "mods":
+                msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
+                return
             copyfile(
                 src,
                 os.path.join(dest, "Labs_Underpass_P.upk")
             )
             msg.showinfo("Copied!", "Map successfully copied to mods")
             return
-        msg.showerror("Invalid path", "Mods path is not a directory")
+        msg.showerror("Invalid path", "Mods path given is not a real directory")
+
+    def deleteunderpass(self):
+        path = cleanpath(self.mods_dir.get())
+        up_path = os.path.join(path, "Labs_Underpass_P.upk")
+        if os.path.exists(path):
+            if os.path.basename(path) != "mods":
+                msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
+                return
+            if os.path.exists(up_path):
+                os.remove(up_path)
+                msg.showinfo("Restored", "Restored Underpass")
+                return
+            msg.showinfo("Already restored", "Already restored Underpass")
+            return
+        msg.showinfo("Invalid path", "Mods path given is not a real directory")
 
     def getwkfiles(self):
         udks = {}
@@ -127,7 +153,8 @@ class MainApp(tk.Frame):
             name = getfilename(t[2], ".udk")
             if name:
                 udks[name] = t[0]
-        return udks
+        sorted_udks = {name: udks[name] for name in sorted(udks.keys())}
+        return sorted_udks
 
     def fillwslist(self, *args):
         self.wkfiles = self.getwkfiles()
@@ -155,10 +182,8 @@ class MainApp(tk.Frame):
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
 
     def makemods(self, *args):
-        basename, split = os.path.basename, os.path.split
-        path = self.mods_dir.get()
-        path = path if basename(path) else split(path)[0]
-        if basename(path) != "CookedPCConsole":
+        path = cleanpath(self.mods_dir.get())
+        if os.path.basename(path) != "CookedPCConsole":
             msg.showerror(
                 "Can't create folder",
                 "Can't create mods folder. Must be located within \\CookedPCConsole"
@@ -239,10 +264,10 @@ class MainApp(tk.Frame):
         frame.grid(row=2, columnspan=3)
         self.frames["middle"] = frame
         widget = tk.Label(frame, text="Workshop Files")
-        widget.grid(row=0, column=0)
+        widget.grid(row=0, column=1)
         self.widgets["l_wkfiles"] = widget
         widget = tk.Scrollbar(frame)
-        widget.grid(row=1, column=1, sticky="ns")
+        widget.grid(row=1, column=2, rowspan=2, sticky="ns")
         self.widgets["s_wkfiles"] = widget
         widget = tk.Listbox(
             frame,
@@ -252,7 +277,7 @@ class MainApp(tk.Frame):
         )
         self.widgets["s_wkfiles"].config(command=widget.yview)
         widget.insert(tk.END, *self.wkfiles.keys())
-        widget.grid(row=1, column=0)
+        widget.grid(row=1, column=1, rowspan=2)
         self.widgets["lb_wkfiles"] = widget
 
 
@@ -261,8 +286,17 @@ class MainApp(tk.Frame):
             text="Activate",
             command=self.copytolabs,
         )
-        widget.grid(row=1, column=2)
+        widget.grid(row=1, column=3, sticky="wes")
         self.widgets["b_tolabs"] = widget
+
+
+        widget = tk.Button(
+            frame,
+            text="Restore Underpass",
+            command=self.deleteunderpass,
+        )
+        widget.grid(row=2, column=3, sticky="n")
+        self.widgets["b_restore"] = widget
 
 
 
