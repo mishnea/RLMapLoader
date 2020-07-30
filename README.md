@@ -1,5 +1,5 @@
 # RL-Mod-Setup
-Utility for easily setting up custom Rocket League maps to play with friends\
+Utility for easily setting up custom Rocket League maps to host locally.\
 [YouTube Demonstration](https://youtu.be/xliaWYAAnXU)
 
 ## Intro
@@ -7,6 +7,8 @@ The program presents a GUI which allows the user to see all of the '.udk' files 
 **The program was created specifically for Windows 10 and is not guaranteed to work with any other OS.**
 
 ## Usage
+To run, double click RLModSetup.py or run from command line with the .py's directory as working directory.
+
 ### First run
 Upon running the first time, the program will create a file called dirs.txt in the current working directory, given it does not already exist. This file contains a json serialized dict holding the paths of the RL workshop maps directory and mods directory. The file will contain the default paths for both dirs as defined in RLModSetup.py, until they are changed by the user.
 
@@ -17,3 +19,7 @@ The GUI has two entry fields, labeled 'Workshop dir' and 'Mods dir'. The text in
 ### Swapping maps
 Given the directories are valid, selecting the desired '.udk' from the list followed by clicking 'Activate' will copy the file from the workshop folder to the mods folder, as "Labs_Underpass_P.upk". Any existing file with that name is simply overwritten.\
 *intend to add a button in future for deleting "Labs_Underpass_P.upk" altogether, allowing the real Underpass to be loaded*
+
+## Requirements
+- Python 3.8 or higher
+- Windows 10 (may work on other OSs)
