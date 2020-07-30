@@ -1,5 +1,5 @@
 # RL-Mod-Setup
-Utility for easily setting up custom Rocket League maps to play with friends
+Utility for easily setting up custom Rocket League maps to play with friends\
 [YouTube Demonstration](https://youtu.be/-tzFten2xvI)
 
 ## Intro
