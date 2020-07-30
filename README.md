@@ -17,7 +17,7 @@ The GUI has two entry fields, labeled 'Workshop dir' and 'Mods dir'. The text in
 *currently any parent directory also works to find the workshop maps, however this is unintentional and may change as searching through all subdirectories can cause the program to lag*
 
 ### Swapping maps
-Given the directories are valid, selecting the desired '.udk' from the list followed by clicking 'Activate' will copy the file from the workshop folder to the mods folder, as "Labs_Underpass_P.upk". Any existing file with that name is simply overwritten.\
+Given the directories are valid, selecting the desired '.udk' from the list followed by clicking 'Activate' will copy the file from the workshop folder to the mods folder, as "Labs_Underpass_P.upk". Any existing file with that name is simply overwritten.
 
 ### Restoring Underpass
 Clicking 'Restore Underpass' will delete the existing 'Labs_Underpass_P.upk' within mods, allowing RL to load Underpass. This is independent of the workshop path but requires the correct mods path.
