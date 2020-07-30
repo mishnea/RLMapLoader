@@ -7,7 +7,7 @@ The program presents a GUI which allows the user to see all of the '.udk' files 
 **The program was created specifically for Windows 10 and is not guaranteed to work with any other OS.**
 
 ## Usage
-To run, double click RLModSetup.py or run from command line with the .py's directory as working directory.
+To run, double click RLModSetup.py or run from command line with the file's directory as working directory.
 
 ### First run
 Upon running the first time, the program will create a file called dirs.txt in the current working directory, given it does not already exist. This file contains a json serialized dict holding the paths of the RL workshop maps directory and mods directory. The file will contain the default paths for both dirs as defined in RLModSetup.py, until they are changed by the user.
