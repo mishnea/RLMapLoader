@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.messagebox as msg
 import json
 from functools import partial
+from collections import OrderedDict
 
 
 
@@ -153,7 +154,9 @@ class MainApp(tk.Frame):
             name = getfilename(t[2], ".udk")
             if name:
                 udks[name] = t[0]
-        sorted_udks = {name: udks[name] for name in sorted(udks.keys())}
+        sorted_udks = OrderedDict(
+            ((name, udks[name]) for name in sorted(udks.keys(), key=lambda s:s.lower())),
+        )
         return sorted_udks
 
     def fillwslist(self, *args):
@@ -192,6 +195,9 @@ class MainApp(tk.Frame):
         try:
             os.mkdir(os.path.join(path, "mods"))
             print("mods directory created")
+            self.mods_dir.set(
+                os.path.join(self.mods_dir.get(), "mods")
+            )
         except FileNotFoundError as exception:
             msg.showerror("No such directory", exception)
         except FileExistsError:
@@ -303,6 +309,6 @@ class MainApp(tk.Frame):
 if __name__ == "__main__":
     getdirs()
     root = tk.Tk()
-    root.title("RL Mods Setup")
+    root.title("RLMapLoader")
     app = MainApp(root)
     root.mainloop()
