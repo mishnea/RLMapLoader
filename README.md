@@ -23,5 +23,5 @@ Given the directories are valid, selecting the desired '.udk' from the list foll
 Clicking 'Restore Underpass' will delete the existing 'Labs_Underpass_P.upk' within mods, allowing RL to load Underpass. This is independent of the workshop path but requires the correct mods path.
 
 ## Requirements
-- Python 3.8 or higher
+- Python 3.x (tested on Python 3.7.8 and 3.8.4)
 - Windows 10 (may work on other OSs)
