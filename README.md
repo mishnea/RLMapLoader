@@ -1,4 +1,4 @@
-# RL-Mod-Setup
+# RLMapLoader
 Utility for easily setting up custom Rocket League maps to host locally.\
 [YouTube Demonstration](https://youtu.be/xliaWYAAnXU)
 
