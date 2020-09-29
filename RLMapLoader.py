@@ -295,9 +295,14 @@ class MainApp(tk.Frame):
         self.widgets["b_restore"] = widget
 
 
-if __name__ == "__main__":
+def start():
     getdirs()
     root = tk.Tk()
     root.title("RLMapLoader")
-    app = MainApp(root)
+    # Catch to avoid being garbage collected
+    app = MainApp(root) # noqa
     root.mainloop()
+
+
+if __name__ == "__main__":
+    start()
