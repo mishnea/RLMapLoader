@@ -1,6 +1,6 @@
 .vscode/
 __pycache__/
 build/
-dirs.txt
+*.json
 *.spec
 *.pyc

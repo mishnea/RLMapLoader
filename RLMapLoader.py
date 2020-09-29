@@ -24,7 +24,7 @@ def getdirs():
     global WORKSHOP_DIR
 
     try:
-        with open("dirs.txt", "r") as f:
+        with open("dirs.json", "r") as f:
             dirs_dict = json.load(f)
             if type(dirs_dict) != dict:
                 raise json.JSONDecodeError
@@ -42,7 +42,7 @@ def savedirs(mods=None, workshop=None):
         "WORKSHOP_DIR": workshop if workshop is not None else WORKSHOP_DIR,
     }
 
-    with open("dirs.txt", "w") as f:
+    with open("dirs.json", "w") as f:
         json.dump(dirs_dict, f)
 
 
