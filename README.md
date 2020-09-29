@@ -7,14 +7,13 @@ The program presents a GUI which allows the user to see all of the '.udk' files 
 **The program was created specifically for Windows 10 and is not guaranteed to work with any other OS.**
 
 ## Usage
-To run, double click RLModSetup.py or run from command line with the file's directory as working directory.
+To run, double click RLModSetup.py or run from command line with the file's directory as working directory. For users who don't have a Python installation, an executable is contained in 'dist'.
 
 ### First run
 Upon running the first time, the program will create a file called dirs.txt in the current working directory, given it does not already exist. This file contains a json serialized dict holding the paths of the RL workshop maps directory and mods directory. The file will contain the default paths for both dirs as defined in RLModSetup.py, until they are changed by the user.
 
 ### Changing dirs
-The GUI has two entry fields, labeled 'Workshop dir' and 'Mods dir'. The text in the fields should be paths to '\Steam\steamapps\workshop\content\252950' and 'rocketleague\TAGame\CookedPCConsole\mods' respectively. The former is where the program looks for '.udk's and the latter is where the program copies the selected '.udk' to. Clicking Defaults next to the workshop field sets both fields to their default values, defined in the program. All changes to these fields are saved, so that on running, the last values from the previous session are loaded in.\
-*currently any parent directory also works to find the workshop maps, however this is unintentional and may change as searching through all subdirectories can cause the program to lag*
+The GUI has two entry fields, labeled 'Workshop dir' and 'Mods dir'. The text in the fields should be paths to '\Steam\steamapps\workshop\content\252950' and 'rocketleague\TAGame\CookedPCConsole\mods' respectively. The former is where the program looks for '.udk's and the latter is where the program copies the selected '.udk' to. Clicking Defaults next to the workshop field sets both fields to their default values, defined in the program. All changes to these fields are saved, so that on running, the last values from the previous session are loaded in. The program will only look in an existing file directory, ending in '252950'.
 
 ### Swapping maps
 Given the directories are valid, selecting the desired '.udk' from the list followed by clicking 'Activate' will copy the file from the workshop folder to the mods folder, as "Labs_Underpass_P.upk". Any existing file with that name is simply overwritten.
