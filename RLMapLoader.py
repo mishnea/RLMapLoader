@@ -1,10 +1,10 @@
+from collections import OrderedDict
+from functools import partial
+import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
 import tkinter.messagebox as msg
-import json
-from functools import partial
-from collections import OrderedDict
 
 
 def getfilename(files, ext):
