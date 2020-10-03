@@ -154,15 +154,6 @@ class MainApp(tk.Frame):
         widget.delete(0, tk.END)
         widget.insert(tk.END, *self.wkfiles.keys())
 
-    def getmodfiles(self):
-        walk = os.walk(self.mods_dir.get())
-        udks = []
-        for t in walk:
-            name = getfilename(t[2], ".udk")
-            if name:
-                udks.append({"path": t[0], "name": name})
-        return udks
-
     def savedirs(self, *args):
         savedirs(
             self.mods_dir.get(),
