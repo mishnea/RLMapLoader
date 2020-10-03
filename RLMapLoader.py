@@ -7,10 +7,6 @@ from functools import partial
 from collections import OrderedDict
 
 
-def getdrive():
-    return os.getcwd()[:2]
-
-
 def getfilename(files, ext):
     # get name of first file ending in ext if one exists, else None
     for s in files:
@@ -64,11 +60,6 @@ def multi(*funcs):
         return [f(*args, **kwargs) for f in funcs]
 
     return many_func
-
-
-def cleanpath(path):
-    basename, split = os.path.basename, os.path.split
-    return path if basename(path) else split(path)[0]
 
 
 MODS_DIR = ""
