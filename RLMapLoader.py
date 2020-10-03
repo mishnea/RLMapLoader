@@ -88,7 +88,10 @@ class MainApp(tk.Frame):
 
     @staticmethod
     def checkdir(widget, *args):
-        exists = os.path.isdir(widget.get())
+        try:
+            exists = Path(widget.get()).is_dir()
+        except OSError:
+            exists = False
         if exists:
             widget.config(fg="Black")
         else:
@@ -99,30 +102,29 @@ class MainApp(tk.Frame):
             msg.showerror("Can't activate", "No map selected")
             return
         index = self.widgets["lb_wkfiles"].curselection()[0]
-        name, path = list(self.wkfiles.items())[index]
-        src = os.path.join(path, name)
-        dest = cleanpath(self.mods_dir.get())
-        if os.path.isdir(dest):
-            if os.path.basename(dest) != "mods":
+        name, src = list(self.wkfiles.items())[index]
+        dest = Path(self.mods_dir.get())
+        if dest.is_dir():
+            if dest.name != "mods":
                 msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
                 return
             copyfile(
                 src,
-                os.path.join(dest, "Labs_Underpass_P.upk")
+                dest.joinpath("Labs_Underpass_P.upk")
             )
             msg.showinfo("Copied!", "Map successfully copied to mods")
             return
         msg.showerror("Invalid path", "Mods path given is not a real directory")
 
     def deleteunderpass(self):
-        path = cleanpath(self.mods_dir.get())
-        up_path = os.path.join(path, "Labs_Underpass_P.upk")
-        if os.path.exists(path):
-            if os.path.basename(path) != "mods":
+        path = Path(self.mods_dir.get())
+        up_path = path.joinpath("Labs_Underpass_P.upk")
+        if path.exists():
+            if path.name != "mods":
                 msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
                 return
-            if os.path.exists(up_path):
-                os.remove(up_path)
+            if up_path.exists():
+                up_path.unlink()
                 msg.showinfo("Restored", "Restored Underpass")
                 return
             msg.showinfo("Already restored", "Already restored Underpass")
@@ -130,23 +132,12 @@ class MainApp(tk.Frame):
         msg.showinfo("Invalid path", "Mods path given is not a real directory")
 
     def getwkfiles(self):
-        udks = {}
-        path = self.workshop_dir.get()
-        if not path.endswith("252950"):
-            return udks
-        walk = os.walk(path)
+        path = Path(self.workshop_dir.get())
         try:
-            next(walk)
-        except StopIteration:
-            return udks
-        for t in walk:
-            name = getfilename(t[2], ".udk")
-            if name:
-                udks[name] = t[0]
-        sorted_udks = OrderedDict(
-            ((name, udks[name]) for name in sorted(udks.keys(), key=lambda s: s.lower())),
-        )
-        return sorted_udks
+            udks = OrderedDict((p.name, p) for p in sorted(path.glob("*/*.udk"), key=lambda p: p.name.lower()))
+        except OSError:
+            return {}
+        return udks
 
     def fillwslist(self, *args):
         self.wkfiles = self.getwkfiles()
@@ -165,25 +156,26 @@ class MainApp(tk.Frame):
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
 
     def makemods(self, *args):
-        path = cleanpath(self.mods_dir.get())
-        if os.path.basename(path) != "CookedPCConsole":
+        path = Path(self.mods_dir.get())
+        if path.name != "CookedPCConsole":
             msg.showerror(
                 "Can't create folder",
                 "Can't create mods folder. Must be located within \\CookedPCConsole"
             )
             return
+        modspath = Path(path, "mods")
         try:
-            os.mkdir(os.path.join(path, "mods"))
+            modspath.mkdir()
             print("mods directory created")
             self.mods_dir.set(
-                os.path.join(self.mods_dir.get(), "mods")
+                str(modspath)
             )
         except FileNotFoundError as exception:
             msg.showerror("No such directory", exception)
         except FileExistsError:
             msg.showinfo("Already exists", "Mods folder already exists")
             self.mods_dir.set(
-                os.path.join(self.mods_dir.get(), "mods")
+                str(modspath)
             )
 
     def _initwidgets(self):
