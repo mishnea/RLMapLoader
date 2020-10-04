@@ -23,4 +23,5 @@ Clicking 'Restore Underpass' will delete the existing 'Labs_Underpass_P.upk' wit
 
 ## Requirements
 - Python 3.x (tested on Python 3.7.8 and 3.8.4)
+- PIL (`pip install pillow`)
 - Windows 10 (may work on other OSs)
