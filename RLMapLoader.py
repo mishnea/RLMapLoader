@@ -200,9 +200,12 @@ class MainApp(tk.Frame):
             self.image = self.img_default
         self.widgets["l_preview"].configure(image=self.image)
 
-    def updateimg(self, delay=100):
-        self.changeimg()
-        self.after(delay, self.updateimg)
+    def updateimg(self, previous=None, delay=100):
+        selected = self.getselected() or (previous,)
+        name = selected[0]
+        if name != previous:
+            self.changeimg()
+        self.after(delay, lambda: self.updateimg(previous=name))
 
     def makemods(self, *args):
         path = Path(self.mods_dir.get())
