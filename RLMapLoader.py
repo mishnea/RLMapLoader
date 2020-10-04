@@ -270,6 +270,16 @@ class MainApp(tk.Frame):
         widget.grid(row=2, column=3, sticky="n")
         self.widgets["b_restore"] = widget
 
+        width, height = self.img_size
+        widget = tk.Label(
+            frame,
+            image=self.img_default,
+            width=width,
+            height=height
+        )
+        widget.grid(row=1, column=0, rowspan=2)
+        self.widgets["l_preview"] = widget
+
 
 def start():
     getdirs()
