@@ -1,10 +1,12 @@
+from collections import OrderedDict
+from functools import partial
+import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
 import tkinter.messagebox as msg
-import json
-from functools import partial
-from collections import OrderedDict
+
+from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 
 def getfilename(files, ext):
@@ -81,10 +83,16 @@ class MainApp(tk.Frame):
         self.workshop_dir = tk.StringVar()
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
+        # Size for preview image
+        self.img_size = (150, 150)
+        # Generate a default image to be used for preview
+        self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
         self.frames = {}
         self.widgets = {}
         self._initwidgets()
+        # Start preview update on a timer
+        self.updateimg()
 
     @staticmethod
     def checkdir(widget, *args):
@@ -97,12 +105,22 @@ class MainApp(tk.Frame):
         else:
             widget.config(fg="Red")
 
-    def copytolabs(self):
+    def getselected(self):
+        """Return the name and path of selected map
+
+        Returns a tuple containing the current selection's name, or an empty tuple if nothing is selected
+        """
         if not self.widgets["lb_wkfiles"].curselection():
+            return ()
+        index = self.widgets["lb_wkfiles"].curselection()[0]
+        return list(self.wkfiles.items())[index]
+
+    def copytolabs(self):
+        selection = self.getselected()
+        if not selection:
             msg.showerror("Can't activate", "No map selected")
             return
-        index = self.widgets["lb_wkfiles"].curselection()[0]
-        name, src = list(self.wkfiles.items())[index]
+        name, src = selection
         dest = Path(self.mods_dir.get())
         if dest.is_dir():
             if dest.name != "mods":
@@ -154,6 +172,37 @@ class MainApp(tk.Frame):
     def setdefaults(self, *args):
         self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
+
+    def gendefaultimg(self, text):
+        try:
+            font = ImageFont.truetype("arial", 20)
+        except OSError:
+            font = ImageFont.load_default()
+        img = Image.new("RGBA", self.img_size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.text((10, 50), text, (0, 0, 0, 255), font=font)
+        return ImageTk.PhotoImage(img)
+
+    def changeimg(self):
+        selection = self.getselected()
+        if not selection:
+            self.image = self.img_default
+            self.widgets["l_preview"].configure(image=self.image)
+            return
+        path = selection[1].parent
+        pngs = list(Path(path).glob("*.png"))
+        if pngs:
+            im = Image.open(pngs[0])
+            size = self.img_size
+            im.thumbnail(size)
+            self.image = ImageTk.PhotoImage(im)
+        else:
+            self.image = self.img_default
+        self.widgets["l_preview"].configure(image=self.image)
+
+    def updateimg(self, delay=100):
+        self.changeimg()
+        self.after(delay, self.updateimg)
 
     def makemods(self, *args):
         path = Path(self.mods_dir.get())
@@ -267,6 +316,16 @@ class MainApp(tk.Frame):
         )
         widget.grid(row=2, column=3, sticky="n")
         self.widgets["b_restore"] = widget
+
+        width, height = self.img_size
+        widget = tk.Label(
+            frame,
+            image=self.img_default,
+            width=width,
+            height=height
+        )
+        widget.grid(row=1, column=0, rowspan=2)
+        self.widgets["l_preview"] = widget
 
 
 def start():
