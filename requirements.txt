@@ -1,7 +1,1 @@
-flake8==3.8.4
-importlib-metadata==2.0.0
-mccabe==0.6.1
 Pillow==7.2.0
-pycodestyle==2.6.0
-pyflakes==2.2.0
-zipp==3.2.0
