@@ -201,7 +201,7 @@ class MainApp(tk.Frame):
         self.widgets["l_preview"].configure(image=self.image)
 
     def updateimg(self, previous=None, delay=100):
-        selected = self.getselected() or (previous,)
+        selected = self.getselected() or (None,)
         name = selected[0]
         if name != previous:
             self.changeimg()
