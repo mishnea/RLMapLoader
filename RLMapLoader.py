@@ -99,12 +99,22 @@ class MainApp(tk.Frame):
         else:
             widget.config(fg="Red")
 
-    def copytolabs(self):
+    def getselected(self):
+        """Return the name and path of selected map
+
+        Returns a tuple containing the current selection's name, or an empty tuple if nothing is selected
+        """
         if not self.widgets["lb_wkfiles"].curselection():
+            return ()
+        index = self.widgets["lb_wkfiles"].curselection()[0]
+        return list(self.wkfiles.items())[index]
+
+    def copytolabs(self):
+        selection = self.getselected()
+        if not selection:
             msg.showerror("Can't activate", "No map selected")
             return
-        index = self.widgets["lb_wkfiles"].curselection()[0]
-        name, src = list(self.wkfiles.items())[index]
+        name, src = selection
         dest = Path(self.mods_dir.get())
         if dest.is_dir():
             if dest.name != "mods":
