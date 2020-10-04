@@ -91,6 +91,8 @@ class MainApp(tk.Frame):
         self.frames = {}
         self.widgets = {}
         self._initwidgets()
+        # Start preview update on a timer
+        self.updateimg()
 
     @staticmethod
     def checkdir(widget, *args):
