@@ -6,6 +6,8 @@ from shutil import copyfile
 import tkinter as tk
 import tkinter.messagebox as msg
 
+from PIL import Image, ImageTk, ImageDraw, ImageFont
+
 
 def getfilename(files, ext):
     # get name of first file ending in ext if one exists, else None
