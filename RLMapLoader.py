@@ -167,6 +167,16 @@ class MainApp(tk.Frame):
         self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
 
+    def gendefaultimg(self, text):
+        try:
+            font = ImageFont.truetype("arial", 20)
+        except OSError:
+            font = ImageFont.load_default()
+        img = Image.new("RGBA", self.img_size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.text((10, 50), text, (0, 0, 0, 255), font=font)
+        return ImageTk.PhotoImage(img)
+
     def makemods(self, *args):
         path = Path(self.mods_dir.get())
         if path.name != "CookedPCConsole":
