@@ -194,6 +194,10 @@ class MainApp(tk.Frame):
             self.image = self.img_default
         self.widgets["l_preview"].configure(image=self.image)
 
+    def updateimg(self, delay=100):
+        self.changeimg()
+        self.after(delay, self.updateimg)
+
     def makemods(self, *args):
         path = Path(self.mods_dir.get())
         if path.name != "CookedPCConsole":
