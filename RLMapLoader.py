@@ -9,14 +9,6 @@ import tkinter.messagebox as msg
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 
-def getfilename(files, ext):
-    # get name of first file ending in ext if one exists, else None
-    for s in files:
-        if s[-len(ext):] == ext:
-            return s
-    return None
-
-
 def getdirs():
     global MODS_DIR
     global WORKSHOP_DIR
