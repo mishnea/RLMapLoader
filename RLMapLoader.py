@@ -123,7 +123,7 @@ class MainApp(tk.Frame):
         name, src = selection
         dest = Path(self.mods_dir.get())
         if dest.is_dir():
-            if dest.name != "mods":
+            if dest.name.lower() != "mods":
                 msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
                 return
             copyfile(
@@ -138,7 +138,7 @@ class MainApp(tk.Frame):
         path = Path(self.mods_dir.get())
         up_path = path.joinpath("Labs_Underpass_P.upk")
         if path.exists():
-            if path.name != "mods":
+            if path.name.lower() != "mods":
                 msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
                 return
             if up_path.exists():
