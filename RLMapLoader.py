@@ -187,7 +187,7 @@ class MainApp(tk.Frame):
         try:
             udks = OrderedDict((p.name, p) for p in sorted(path.glob("*/*.udk"), key=lambda p: p.name.lower()))
         except OSError:
-            return {}
+            return OrderedDict()
         return udks
 
     def fillwslist(self, *args):
