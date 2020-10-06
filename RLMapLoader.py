@@ -335,6 +335,7 @@ def start():
     getdirs()
     root = tk.Tk()
     root.title("RLMapLoader")
+    root.resizable(False, False)
     # Catch to avoid being garbage collected
     app = MainApp(root) # noqa
     root.mainloop()
