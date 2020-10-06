@@ -110,36 +110,36 @@ class MainApp(tk.Frame):
     def copytolabs(self):
         selection = self.getselected()
         if not selection:
-            msg.showerror("Can't activate", "No map selected")
+            msg.showerror("Activate", "Cannot activate: No map selected")
             return
         name, src = selection
         dest = Path(self.mods_dir.get())
         if dest.is_dir():
             if dest.name.lower() != "mods":
-                msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
+                msg.showerror("Activate", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
             copyfile(
                 src,
                 dest.joinpath("Labs_Underpass_P.upk")
             )
-            msg.showinfo("Copied!", "Map successfully copied to mods")
+            msg.showinfo("Activate", "Map successfully copied to mods")
             return
-        msg.showerror("Invalid path", "Mods path given is not a real directory")
+        msg.showerror("Activate", "Invalid path: Mods path given is not a real directory")
 
     def deleteunderpass(self):
         path = Path(self.mods_dir.get())
         up_path = path.joinpath("Labs_Underpass_P.upk")
         if path.exists():
             if path.name.lower() != "mods":
-                msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
+                msg.showerror("Restore Underpass", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
             if up_path.exists():
                 up_path.unlink()
-                msg.showinfo("Restored", "Restored Underpass")
+                msg.showinfo("Restore Underpass", "Successfully restored Underpass")
                 return
-            msg.showinfo("Already restored", "Already restored Underpass")
+            msg.showinfo("Restore Underpass", "Already restored Underpass")
             return
-        msg.showinfo("Invalid path", "Mods path given is not a real directory")
+        msg.showinfo("Restore Underpass", "Invalid path: Mods path given is not a real directory")
 
     def getwkfiles(self):
         path = Path(self.workshop_dir.get())
@@ -202,22 +202,19 @@ class MainApp(tk.Frame):
     def makemods(self, *args):
         path = Path(self.mods_dir.get())
         if path.name != "CookedPCConsole":
-            msg.showerror(
-                "Can't create folder",
-                "Can't create mods folder. Must be located within \\CookedPCConsole"
-            )
+            msg.showerror("Make mods folder", "Can't create mods folder. Must be located within \\CookedPCConsole")
             return
         modspath = Path(path, "mods")
         try:
             modspath.mkdir()
-            print("mods directory created")
+            msg.showerror("Make mods folder", "Successfully created folder. Changed mods dir to new folder.")
             self.mods_dir.set(
                 str(modspath)
             )
-        except FileNotFoundError as exception:
-            msg.showerror("No such directory", exception)
+        except FileNotFoundError:
+            msg.showerror("Make mods folder", "Path specified in mods dir is not a real directory")
         except FileExistsError:
-            msg.showinfo("Already exists", "Mods folder already exists")
+            msg.showinfo("Make mods folder", "Mods folder already exists")
             self.mods_dir.set(
                 str(modspath)
             )
