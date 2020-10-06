@@ -9,15 +9,13 @@ import tkinter.messagebox as msg
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 
-def getfilename(files, ext):
-    # get name of first file ending in ext if one exists, else None
-    for s in files:
-        if s[-len(ext):] == ext:
-            return s
-    return None
-
-
 def getdirs():
+    """Update MODS_DIR and WORKSHOP_DIR using saved dirs
+
+    Get directories saved in dirs.json if it exists in the correct format, else use defaults and create the file.
+    Sets MODS_DIR and WORKSHOP_DIR and has no return value.
+    """
+
     global MODS_DIR
     global WORKSHOP_DIR
 
@@ -35,6 +33,8 @@ def getdirs():
 
 
 def savedirs(mods=None, workshop=None):
+    """Save mods and workshop directories to dirs.json"""
+
     dirs_dict = {
         "MODS_DIR": mods if mods is not None else MODS_DIR,
         "WORKSHOP_DIR": workshop if workshop is not None else WORKSHOP_DIR,
@@ -45,6 +45,12 @@ def savedirs(mods=None, workshop=None):
 
 
 def warnwrap(f):
+    """Wrap a widget callback to raise a warning.
+
+    Raises a warning messagebox before calling the function passed to 'f'.
+    Only calls the function is the user responds with 'ok'.
+    """
+
     def func(*args, **kwargs):
         ans = msg.showwarning(
             title="Create folder",
@@ -58,6 +64,12 @@ def warnwrap(f):
 
 
 def multi(*funcs):
+    """Pass many functions as one widget callback.
+
+    Takes any number of functions. Returns a function which calls all of the wrapped functions with the same args.
+    Returns a list of the return values.
+    """
+
     def many_func(*args, **kwargs):
         return [f(*args, **kwargs) for f in funcs]
 
@@ -75,6 +87,8 @@ default_dirs = {
 
 
 class MainApp(tk.Frame):
+    """Class defining app behaviour. Acts as a tkinter frame."""
+
     def __init__(self, master):
         super().__init__(master)
         self.pack()
@@ -83,19 +97,24 @@ class MainApp(tk.Frame):
         self.workshop_dir = tk.StringVar()
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
-        # Size for preview image
+        # Size for preview image.
         self.img_size = (150, 150)
-        # Generate a default image to be used for preview
+        # Generate a default image to be used for preview.
         self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
         self.frames = {}
         self.widgets = {}
         self._initwidgets()
-        # Start preview update on a timer
+        # Start preview update on a timer.
         self.updateimg()
 
     @staticmethod
     def checkdir(widget, *args):
+        """Check if the value of a widget is a path to an existing directory.
+
+        Applies formatting to the widget's text based on the result.
+        """
+
         try:
             exists = Path(widget.get()).is_dir()
         except OSError:
@@ -106,74 +125,100 @@ class MainApp(tk.Frame):
             widget.config(fg="Red")
 
     def getselected(self):
-        """Return the name and path of selected map
+        """Return the name and path of the selected map.
 
-        Returns a tuple containing the current selection's name, or an empty tuple if nothing is selected
+        Returns a tuple containing the current selection's items, or an empty tuple if nothing is selected
         """
+
         if not self.widgets["lb_wkfiles"].curselection():
             return ()
         index = self.widgets["lb_wkfiles"].curselection()[0]
         return list(self.wkfiles.items())[index]
 
     def copytolabs(self):
+        """Copy the selected map to the mods folder
+
+        Tries to copy the selected '.udk' file to the mods folder. Shows a messagebox on success or failure.
+        """
+
         selection = self.getselected()
         if not selection:
-            msg.showerror("Can't activate", "No map selected")
+            msg.showerror("Activate", "Cannot activate: No map selected")
             return
         name, src = selection
         dest = Path(self.mods_dir.get())
         if dest.is_dir():
             if dest.name.lower() != "mods":
-                msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
+                msg.showerror("Activate", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
             copyfile(
                 src,
                 dest.joinpath("Labs_Underpass_P.upk")
             )
-            msg.showinfo("Copied!", "Map successfully copied to mods")
+            msg.showinfo("Activate", "Map successfully copied to mods")
             return
-        msg.showerror("Invalid path", "Mods path given is not a real directory")
+        msg.showerror("Activate", "Invalid path: Mods path given is not a real directory")
 
     def deleteunderpass(self):
+        """Delete 'Underpass' from the mods folder.
+
+        Tries to delete 'Labs_Underpass_P.upk' from the mods folder.
+        Displays a messagebox with the outcome.
+        """
+
         path = Path(self.mods_dir.get())
         up_path = path.joinpath("Labs_Underpass_P.upk")
         if path.exists():
             if path.name.lower() != "mods":
-                msg.showerror("Invalid path", "Mods path must lead to a folder called 'mods'")
+                msg.showerror("Restore Underpass", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
             if up_path.exists():
                 up_path.unlink()
-                msg.showinfo("Restored", "Restored Underpass")
+                msg.showinfo("Restore Underpass", "Successfully restored Underpass")
                 return
-            msg.showinfo("Already restored", "Already restored Underpass")
+            msg.showinfo("Restore Underpass", "Already restored Underpass")
             return
-        msg.showinfo("Invalid path", "Mods path given is not a real directory")
+        msg.showinfo("Restore Underpass", "Invalid path: Mods path given is not a real directory")
 
     def getwkfiles(self):
+        """Return an OrderedDict containing name-path pairs of workshop files."""
+
         path = Path(self.workshop_dir.get())
         try:
             udks = OrderedDict((p.name, p) for p in sorted(path.glob("*/*.udk"), key=lambda p: p.name.lower()))
         except OSError:
-            return {}
+            return OrderedDict()
         return udks
 
     def fillwslist(self, *args):
+        """Fill listbox with workshop file names."""
+
         self.wkfiles = self.getwkfiles()
         widget = self.widgets["lb_wkfiles"]
         widget.delete(0, tk.END)
         widget.insert(tk.END, *self.wkfiles.keys())
 
     def savedirs(self, *args):
+        """Call global savedirs function with the entry widget values."""
+
         savedirs(
             self.mods_dir.get(),
             self.workshop_dir.get(),
         )
 
     def setdefaults(self, *args):
+        """Set entry widget values to the paths in default_dirs."""
+
         self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
 
     def gendefaultimg(self, text):
+        """Generate image to use when no preview image is available.
+
+        Creates a default image to use when no preview image is found in the selected map's folder or none is selected.
+        The image has a transparent background and black text specified by 'text'.
+        """
+
         try:
             font = ImageFont.truetype("arial", 20)
         except OSError:
@@ -184,6 +229,11 @@ class MainApp(tk.Frame):
         return ImageTk.PhotoImage(img)
 
     def changeimg(self):
+        """Change to the preview image for the selected map.
+
+        Changes to the default image if no image is available or no map is selected.
+        """
+
         selection = self.getselected()
         if not selection:
             self.image = self.img_default
@@ -201,6 +251,12 @@ class MainApp(tk.Frame):
         self.widgets["l_preview"].configure(image=self.image)
 
     def updateimg(self, previous=None, delay=100):
+        """Call the changeimg method if the map selection has changed.
+
+        Checks whether the selection has changed periodically. The period is specified by 'delay', in milliseconds.
+        Achieved by the function calling itself on a timer.
+        """
+
         selected = self.getselected() or (None,)
         name = selected[0]
         if name != previous:
@@ -208,29 +264,35 @@ class MainApp(tk.Frame):
         self.after(delay, lambda: self.updateimg(previous=name))
 
     def makemods(self, *args):
+        """Tries to make a folder called 'mods' in the current mods directory.
+
+        Makes a new folder called 'mods' in the specified mods directory if it doesn't already exist.
+        The directory must exist and be called 'CookedPCConsole'.
+        Displays a messagebox with the outcome.
+        """
+
         path = Path(self.mods_dir.get())
         if path.name != "CookedPCConsole":
-            msg.showerror(
-                "Can't create folder",
-                "Can't create mods folder. Must be located within \\CookedPCConsole"
-            )
+            msg.showerror("Make mods folder", "Can't create mods folder. Must be located within \\CookedPCConsole")
             return
         modspath = Path(path, "mods")
         try:
             modspath.mkdir()
-            print("mods directory created")
+            msg.showinfo("Make mods folder", "Successfully created folder. Changed mods dir to new folder.")
             self.mods_dir.set(
                 str(modspath)
             )
-        except FileNotFoundError as exception:
-            msg.showerror("No such directory", exception)
+        except FileNotFoundError:
+            msg.showerror("Make mods folder", "Path specified in mods dir is not a real directory")
         except FileExistsError:
-            msg.showinfo("Already exists", "Mods folder already exists")
+            msg.showinfo("Make mods folder", "Mods folder already exists")
             self.mods_dir.set(
                 str(modspath)
             )
 
     def _initwidgets(self):
+        """Initialise widgets."""
+
         self.widgets = {}
 
         widget = tk.Label(self, text="Workshop dir:")
@@ -332,11 +394,13 @@ class MainApp(tk.Frame):
 
 
 def start():
+    """Start the program."""
+
     getdirs()
     root = tk.Tk()
     root.title("RLMapLoader")
     root.resizable(False, False)
-    # Catch to avoid being garbage collected
+    # Catch object to avoid garbage collection.
     app = MainApp(root) # noqa
     root.mainloop()
 
