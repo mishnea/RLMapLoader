@@ -278,7 +278,7 @@ class MainApp(tk.Frame):
         modspath = Path(path, "mods")
         try:
             modspath.mkdir()
-            msg.showerror("Make mods folder", "Successfully created folder. Changed mods dir to new folder.")
+            msg.showinfo("Make mods folder", "Successfully created folder. Changed mods dir to new folder.")
             self.mods_dir.set(
                 str(modspath)
             )
