@@ -97,15 +97,15 @@ class MainApp(tk.Frame):
         self.workshop_dir = tk.StringVar()
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
-        # Size for preview image
+        # Size for preview image.
         self.img_size = (150, 150)
-        # Generate a default image to be used for preview
+        # Generate a default image to be used for preview.
         self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
         self.frames = {}
         self.widgets = {}
         self._initwidgets()
-        # Start preview update on a timer
+        # Start preview update on a timer.
         self.updateimg()
 
     @staticmethod
@@ -400,7 +400,7 @@ def start():
     root = tk.Tk()
     root.title("RLMapLoader")
     root.resizable(False, False)
-    # Catch to avoid being garbage collected
+    # Catch object to avoid garbage collection.
     app = MainApp(root) # noqa
     root.mainloop()
 
