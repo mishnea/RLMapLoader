@@ -243,7 +243,7 @@ class MainApp(tk.Frame):
             font = ImageFont.load_default()
         img = Image.new("RGBA", self.img_size, (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        d.text((10, 50), text, (0, 0, 0, 255), font=font)
+        d.text((30, 65), text, (0, 0, 0, 255), font=font)
         return ImageTk.PhotoImage(img)
 
     def changeimg(self):
