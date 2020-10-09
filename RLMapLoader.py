@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
 import tkinter.messagebox as msg
+import webbrowser
 
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
