@@ -99,7 +99,7 @@ class MainApp(tk.Frame):
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
-        self.img_size = (150, 150)
+        self.img_size = (160, 160)
         # Generate a default image to be used for preview.
         self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
