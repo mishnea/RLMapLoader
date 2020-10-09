@@ -199,6 +199,23 @@ class MainApp(tk.Frame):
         widget.delete(0, tk.END)
         widget.insert(tk.END, *self.wkfiles.keys())
 
+    def openfolder(self, *args):
+        """Open selected folder in File Explorer."""
+
+        try:
+            name, src = self.getselected()
+            path = src.parent
+        except ValueError:
+            path = self.workshop_dir.get()
+        try:
+            is_dir = Path(path).is_dir()
+        except OSError:
+            is_dir = False
+        if is_dir:
+            webbrowser.open(path)
+        else:
+            msg.showerror("Open Folder", f"Can't open folder. \"{path}\" is not a valid directory.")
+
     def savedirs(self, *args):
         """Call global savedirs function with the entry widget values."""
 
