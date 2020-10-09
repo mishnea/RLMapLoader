@@ -252,15 +252,19 @@ class MainApp(tk.Frame):
         Changes to the default image if no image is available or no map is selected.
         """
 
+        filetypes = ("*.png", "*.jpg", "*.jpeg", "*.bmp")
+
         selection = self.getselected()
         if not selection:
             self.image = self.img_default
             self.widgets["l_preview"].configure(image=self.image)
             return
         path = selection[1].parent
-        pngs = list(Path(path).glob("*.png"))
-        if pngs:
-            im = Image.open(pngs[0])
+        images = []
+        for ext in filetypes:
+            images.extend(Path(path).glob(ext))
+        if images:
+            im = Image.open(images[0])
             size = self.img_size
             im.thumbnail(size)
             self.image = ImageTk.PhotoImage(im)
