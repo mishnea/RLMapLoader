@@ -414,15 +414,13 @@ class MainApp(tk.Frame):
         widget.grid(row=2, column=3, sticky="n")
         self.widgets["b_restore"] = widget
 
-        width, height = self.img_size
-        widget = tk.Label(
+        widget = tk.Button(
             frame,
-            image=self.img_default,
-            width=width,
-            height=height
+            text="Open Folder",
+            command=self.openfolder,
         )
-        widget.grid(row=1, column=0, rowspan=2)
-        self.widgets["l_preview"] = widget
+        widget.grid(row=3, column=3, sticky="wen")
+        self.widgets["b_openfolder"] = widget
 
 
 def start():
