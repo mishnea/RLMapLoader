@@ -371,7 +371,7 @@ class MainApp(tk.Frame):
         widget.grid(row=0, column=1)
         self.widgets["l_wkfiles"] = widget
         widget = tk.Scrollbar(frame)
-        widget.grid(row=1, column=2, rowspan=2, sticky="ns")
+        widget.grid(row=1, column=2, rowspan=3, sticky="ns")
         self.widgets["s_wkfiles"] = widget
         widget = tk.Listbox(
             frame,
@@ -381,7 +381,7 @@ class MainApp(tk.Frame):
         )
         self.widgets["s_wkfiles"].config(command=widget.yview)
         widget.insert(tk.END, *self.wkfiles.keys())
-        widget.grid(row=1, column=1, rowspan=2)
+        widget.grid(row=1, column=1, rowspan=1)
         self.widgets["lb_wkfiles"] = widget
 
         width, height = self.img_size
