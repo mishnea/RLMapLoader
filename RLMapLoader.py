@@ -99,7 +99,7 @@ class MainApp(tk.Frame):
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
-        self.img_size = (150, 150)
+        self.img_size = (160, 160)
         # Generate a default image to be used for preview.
         self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
@@ -243,7 +243,7 @@ class MainApp(tk.Frame):
             font = ImageFont.load_default()
         img = Image.new("RGBA", self.img_size, (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        d.text((10, 50), text, (0, 0, 0, 255), font=font)
+        d.text((30, 65), text, (0, 0, 0, 255), font=font)
         return ImageTk.PhotoImage(img)
 
     def changeimg(self):
@@ -252,15 +252,19 @@ class MainApp(tk.Frame):
         Changes to the default image if no image is available or no map is selected.
         """
 
+        filetypes = ("*.png", "*.jpg", "*.jpeg", "*.bmp")
+
         selection = self.getselected()
         if not selection:
             self.image = self.img_default
             self.widgets["l_preview"].configure(image=self.image)
             return
         path = selection[1].parent
-        pngs = list(Path(path).glob("*.png"))
-        if pngs:
-            im = Image.open(pngs[0])
+        images = []
+        for ext in filetypes:
+            images.extend(Path(path).glob(ext))
+        if images:
+            im = Image.open(images[0])
             size = self.img_size
             im.thumbnail(size)
             self.image = ImageTk.PhotoImage(im)
