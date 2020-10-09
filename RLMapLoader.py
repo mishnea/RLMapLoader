@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
 import tkinter.messagebox as msg
+import webbrowser
 
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
@@ -198,6 +199,23 @@ class MainApp(tk.Frame):
         widget.delete(0, tk.END)
         widget.insert(tk.END, *self.wkfiles.keys())
 
+    def openfolder(self, *args):
+        """Open selected folder in File Explorer."""
+
+        try:
+            name, src = self.getselected()
+            path = src.parent
+        except ValueError:
+            path = self.workshop_dir.get()
+        try:
+            is_dir = Path(path).is_dir()
+        except OSError:
+            is_dir = False
+        if is_dir:
+            webbrowser.open(path)
+        else:
+            msg.showerror("Open Folder", f"Can't open folder. \"{path}\" is not a valid directory.")
+
     def savedirs(self, *args):
         """Call global savedirs function with the entry widget values."""
 
@@ -353,7 +371,7 @@ class MainApp(tk.Frame):
         widget.grid(row=0, column=1)
         self.widgets["l_wkfiles"] = widget
         widget = tk.Scrollbar(frame)
-        widget.grid(row=1, column=2, rowspan=2, sticky="ns")
+        widget.grid(row=1, column=2, rowspan=3, sticky="ns")
         self.widgets["s_wkfiles"] = widget
         widget = tk.Listbox(
             frame,
@@ -363,8 +381,22 @@ class MainApp(tk.Frame):
         )
         self.widgets["s_wkfiles"].config(command=widget.yview)
         widget.insert(tk.END, *self.wkfiles.keys())
-        widget.grid(row=1, column=1, rowspan=2)
+        widget.grid(row=1, column=1, rowspan=1)
         self.widgets["lb_wkfiles"] = widget
+
+        width, height = self.img_size
+        widget = tk.Label(
+            frame,
+            image=self.img_default,
+            width=width,
+            height=height
+        )
+        widget.grid(row=1, column=0, rowspan=1)
+        self.widgets["l_preview"] = widget
+
+        frame = tk.Frame(self.frames["middle"])
+        frame.grid(row=1, column=3)
+        self.frames["middle.right"] = frame
 
         widget = tk.Button(
             frame,
@@ -382,15 +414,13 @@ class MainApp(tk.Frame):
         widget.grid(row=2, column=3, sticky="n")
         self.widgets["b_restore"] = widget
 
-        width, height = self.img_size
-        widget = tk.Label(
+        widget = tk.Button(
             frame,
-            image=self.img_default,
-            width=width,
-            height=height
+            text="Open Folder",
+            command=self.openfolder,
         )
-        widget.grid(row=1, column=0, rowspan=2)
-        self.widgets["l_preview"] = widget
+        widget.grid(row=3, column=3, sticky="wen")
+        self.widgets["b_openfolder"] = widget
 
 
 def start():
