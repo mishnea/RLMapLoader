@@ -117,10 +117,10 @@ class MainApp(tk.Frame):
         """
 
         try:
-            exists = Path(widget.get()).is_dir()
+            is_dir = Path(widget.get()).is_dir()
         except OSError:
-            exists = False
-        if exists:
+            is_dir = False
+        if is_dir:
             widget.config(fg="Black")
         else:
             widget.config(fg="Red")
