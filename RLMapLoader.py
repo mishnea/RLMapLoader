@@ -117,10 +117,10 @@ class MainApp(tk.Frame):
         """
 
         try:
-            exists = Path(widget.get()).is_dir()
+            is_dir = Path(widget.get()).is_dir()
         except OSError:
-            exists = False
-        if exists:
+            is_dir = False
+        if is_dir:
             widget.config(fg="Black")
         else:
             widget.config(fg="Red")
@@ -148,7 +148,11 @@ class MainApp(tk.Frame):
             return
         name, src = selection
         dest = Path(self.mods_dir.get())
-        if dest.is_dir():
+        try:
+            is_dir = dest.is_dir()
+        except OSError:
+            is_dir = False
+        if is_dir:
             if dest.name.lower() != "mods":
                 msg.showerror("Activate", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
@@ -169,7 +173,11 @@ class MainApp(tk.Frame):
 
         path = Path(self.mods_dir.get())
         up_path = path.joinpath("Labs_Underpass_P.upk")
-        if path.exists():
+        try:
+            is_dir = path.is_dir()
+        except OSError:
+            is_dir = False
+        if is_dir:
             if path.name.lower() != "mods":
                 msg.showerror("Restore Underpass", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
@@ -179,7 +187,7 @@ class MainApp(tk.Frame):
                 return
             msg.showinfo("Restore Underpass", "Already restored Underpass")
             return
-        msg.showinfo("Restore Underpass", "Invalid path: Mods path given is not a real directory")
+        msg.showerror("Restore Underpass", "Invalid path: Mods path given is not a real directory")
 
     def getwkfiles(self):
         """Return an OrderedDict containing name-path pairs of workshop files."""
