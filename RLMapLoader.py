@@ -173,7 +173,11 @@ class MainApp(tk.Frame):
 
         path = Path(self.mods_dir.get())
         up_path = path.joinpath("Labs_Underpass_P.upk")
-        if path.exists():
+        try:
+            is_dir = path.is_dir()
+        except OSError:
+            is_dir = False
+        if is_dir:
             if path.name.lower() != "mods":
                 msg.showerror("Restore Underpass", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
