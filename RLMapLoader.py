@@ -179,7 +179,7 @@ class MainApp(tk.Frame):
                 return
             msg.showinfo("Restore Underpass", "Already restored Underpass")
             return
-        msg.showinfo("Restore Underpass", "Invalid path: Mods path given is not a real directory")
+        msg.showerror("Restore Underpass", "Invalid path: Mods path given is not a real directory")
 
     def getwkfiles(self):
         """Return an OrderedDict containing name-path pairs of workshop files."""
