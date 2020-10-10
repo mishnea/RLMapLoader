@@ -8,10 +8,6 @@ The program presents a GUI which allows the user to see all of the '.udk' files 
 
 ## Setup
 
-### Executable
-If you don't have Python installed, and don't want to install it, then you can use the '.exe' file found in the 'dist' folder. This should work right away, but takes longer to launch.
-
-### Python
 The following instructions will work for Windows users only:
 
 1. Make sure you have Python 3.7 or higher installed. Previous Python 3 versions may work, but it is not guaranteed.
