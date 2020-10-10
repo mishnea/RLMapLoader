@@ -148,7 +148,11 @@ class MainApp(tk.Frame):
             return
         name, src = selection
         dest = Path(self.mods_dir.get())
-        if dest.is_dir():
+        try:
+            is_dir = dest.is_dir()
+        except OSError:
+            is_dir = False
+        if is_dir:
             if dest.name.lower() != "mods":
                 msg.showerror("Activate", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
