@@ -2,9 +2,14 @@
 .minvenv/
 # Development venv
 .venv/
+# VSCode settings
 .vscode/
+# Python
 __pycache__/
-build/
-*.json
-*.spec
 *.pyc
+# Program Settings
+*.json
+# PyInstaller
+*.spec
+build/
+dist/
