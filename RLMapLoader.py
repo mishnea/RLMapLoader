@@ -100,7 +100,7 @@ class MainApp(ttk.Frame):
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
-        self.img_size = (160, 160)
+        self.img_size = (240, 158)
         # Generate a default image to be used for preview.
         self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
