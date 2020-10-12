@@ -340,13 +340,12 @@ class MainApp(ttk.Frame):
             width=60,
         )
         self.workshop_dir.trace("w", multi(
-            partial(self.checkdir, widget),
+            partial(self.checkdir, self.widgets["e_wkdir"]),
             self.savedirs,
             self.fillwslist,
         ))
-        widget.grid(row=0, column=1)
-        self.checkdir(widget)
-        self.widgets["e_wkdir"] = widget
+        self.widgets["e_wkdir"].grid(row=0, column=1)
+        self.checkdir(self.widgets["e_wkdir"])
 
         self.widgets["l_mdir"] = ttk.Label(self, text="Mods dir:")
         self.widgets["l_mdir"].grid(row=1, sticky="e")
@@ -357,28 +356,25 @@ class MainApp(ttk.Frame):
             width=60,
         )
         self.mods_dir.trace("w", multi(
-            partial(self.checkdir, widget),
+            partial(self.checkdir, self.widgets["e_mdir"]),
             self.savedirs,
         ))
-        widget.grid(row=1, column=1)
-        self.checkdir(widget)
-        self.widgets["e_mdir"] = widget
+        self.widgets["e_mdir"].grid(row=1, column=1)
+        self.checkdir(self.widgets["e_mdir"])
 
         self.widgets["b_defaults"] = ttk.Button(
             self,
             text="Defaults",
             command=self.setdefaults
         )
-        widget.grid(row=0, column=2, rowspan=1, sticky="we")
-        self.widgets["b_defaults"] = widget
+        self.widgets["b_defaults"].grid(row=0, column=2, rowspan=1, sticky="we")
 
         self.widgets["b_mkmods"] = ttk.Button(
             self,
             text="Make mods folder",
             command=warnwrap(self.makemods)
         )
-        widget.grid(row=1, column=2, rowspan=1)
-        self.widgets["b_mkmods"] = widget
+        self.widgets["b_mkmods"].grid(row=1, column=2, rowspan=1)
 
         self.frames["middle"] = ttk.Frame(self)
         self.frames["middle"].grid(row=2, columnspan=3)
@@ -398,20 +394,20 @@ class MainApp(ttk.Frame):
             selectmode=tk.SINGLE,
             yscrollcommand=self.widgets["s_wkfiles"].set,
         )
-        self.widgets["s_wkfiles"].config(command=widget.yview)
-        widget.insert(tk.END, *self.wkfiles.keys())
-        widget.grid(row=1, column=1, rowspan=1)
-        self.widgets["lb_wkfiles"] = widget
+        self.widgets["s_wkfiles"].config(command=self.widgets["lb_wkfiles"].yview)
+        self.widgets["lb_wkfiles"].insert(tk.END, *self.wkfiles.keys())
+        self.widgets["lb_wkfiles"].grid(row=1, column=1, rowspan=1)
 
         width, height = self.img_size
-        widget = tk.Label(
-            frame,
+        self.widgets["l_preview"] = tk.Label(
+            self.frames["middle"],
             image=self.img_default,
             width=width,
-            height=height
+            height=height,
+            bd=2,
+            padx=5
         )
-        widget.grid(row=1, column=0, rowspan=1)
-        self.widgets["l_preview"] = widget
+        self.widgets["l_preview"].grid(row=1, column=0, rowspan=1)
 
         self.frames["middle.right"] = ttk.Frame(self.frames["middle"])
         self.frames["middle.right"].grid(row=1, column=3)
@@ -421,24 +417,21 @@ class MainApp(ttk.Frame):
             text="Activate",
             command=self.copytolabs,
         )
-        widget.grid(row=1, column=3, sticky="wes")
-        self.widgets["b_tolabs"] = widget
+        self.widgets["b_tolabs"].grid(row=1, column=3, sticky="wes")
 
         self.widgets["b_restore"] = ttk.Button(
             self.frames["middle.right"],
             text="Restore Underpass",
             command=self.deleteunderpass,
         )
-        widget.grid(row=2, column=3, sticky="n")
-        self.widgets["b_restore"] = widget
+        self.widgets["b_restore"].grid(row=2, column=3, sticky="n")
 
         self.widgets["b_openfolder"] = ttk.Button(
             self.frames["middle.right"],
             text="Open Folder",
             command=self.openfolder,
         )
-        widget.grid(row=3, column=3, sticky="wen")
-        self.widgets["b_openfolder"] = widget
+        self.widgets["b_openfolder"].grid(row=3, column=3, sticky="wen")
 
 
 def start():
