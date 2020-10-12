@@ -326,6 +326,8 @@ class MainApp(ttk.Frame):
     def _initwidgets(self):
         """Initialise widgets."""
 
+        self.config(pad=4)
+
         self.widgets = {}
 
         self.widgets["l_wkdir"] = ttk.Label(self, text="Workshop dir:")
