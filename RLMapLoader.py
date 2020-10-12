@@ -238,6 +238,8 @@ class MainApp(ttk.Frame):
 
         self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
+        self.checkdir(self.widgets["e_mdir"])
+        self.checkdir(self.widgets["e_wkdir"])
 
     def gendefaultimg(self, text):
         """Generate image to use when no preview image is available.
