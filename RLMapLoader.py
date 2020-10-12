@@ -447,6 +447,7 @@ def start():
     getdirs()
     root = tk.Tk()
     root.title("RLMapLoader")
+    root.iconbitmap("icon.ico")
     root.resizable(False, False)
     # Catch object to avoid garbage collection.
     app = MainApp(root) # noqa
