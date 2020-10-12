@@ -389,7 +389,12 @@ class MainApp(ttk.Frame):
         self.widgets["s_wkfiles"] = ttk.Scrollbar(self.frames["middle"])
         self.widgets["s_wkfiles"].grid(row=1, column=2, rowspan=3, sticky="ns")
 
+        self.widgets["lb_wkfiles"] = tk.Listbox(
+            self.frames["middle"],
             width=30,
+            highlightthickness=-1,
+            activestyle=tk.NONE,
+            relief=tk.SOLID,
             selectmode=tk.SINGLE,
             yscrollcommand=self.widgets["s_wkfiles"].set,
         )
