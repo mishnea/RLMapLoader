@@ -122,9 +122,9 @@ class MainApp(ttk.Frame):
         except OSError:
             is_dir = False
         if is_dir:
-            widget.config(fg="Black")
+            widget.config(style="TEntry")
         else:
-            widget.config(fg="Red")
+            widget.config(style="R.TEntry")
 
     def getselected(self):
         """Return the name and path of the selected map.
