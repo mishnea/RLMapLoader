@@ -88,7 +88,7 @@ default_dirs = {
 }
 
 
-class MainApp(tk.Frame):
+class MainApp(ttk.Frame):
     """Class defining app behaviour. Acts as a tkinter frame."""
 
     def __init__(self, master):
@@ -326,11 +326,11 @@ class MainApp(tk.Frame):
 
         self.widgets = {}
 
-        widget = tk.Label(self, text="Workshop dir:")
-        widget.grid(row=0, sticky="e")
-        self.widgets["l_wkdir"] = widget
+        self.widgets["l_wkdir"] = ttk.Label(self, text="Workshop dir:")
+        self.widgets["l_wkdir"].grid(row=0, sticky="e")
 
-        widget = tk.Entry(
+        ttk.Style().configure("R.TEntry", foreground="#f00")
+        self.widgets["e_wkdir"] = ttk.Entry(
             self,
             textvariable=self.workshop_dir,
             width=60,
@@ -344,11 +344,10 @@ class MainApp(tk.Frame):
         self.checkdir(widget)
         self.widgets["e_wkdir"] = widget
 
-        widget = tk.Label(self, text="Mods dir:")
-        widget.grid(row=1, sticky="e")
-        self.widgets["l_mdir"] = widget
+        self.widgets["l_mdir"] = ttk.Label(self, text="Mods dir:")
+        self.widgets["l_mdir"].grid(row=1, sticky="e")
 
-        widget = tk.Entry(
+        self.widgets["e_mdir"] = ttk.Entry(
             self,
             textvariable=self.mods_dir,
             width=60,
@@ -361,7 +360,7 @@ class MainApp(tk.Frame):
         self.checkdir(widget)
         self.widgets["e_mdir"] = widget
 
-        widget = tk.Button(
+        self.widgets["b_defaults"] = ttk.Button(
             self,
             text="Defaults",
             command=self.setdefaults
@@ -369,7 +368,7 @@ class MainApp(tk.Frame):
         widget.grid(row=0, column=2, rowspan=1, sticky="we")
         self.widgets["b_defaults"] = widget
 
-        widget = tk.Button(
+        self.widgets["b_mkmods"] = ttk.Button(
             self,
             text="Make mods folder",
             command=warnwrap(self.makemods)
@@ -377,17 +376,15 @@ class MainApp(tk.Frame):
         widget.grid(row=1, column=2, rowspan=1)
         self.widgets["b_mkmods"] = widget
 
-        frame = tk.Frame(self)
-        frame.grid(row=2, columnspan=3)
-        self.frames["middle"] = frame
-        widget = tk.Label(frame, text="Workshop Files")
-        widget.grid(row=0, column=1)
-        self.widgets["l_wkfiles"] = widget
-        widget = tk.Scrollbar(frame)
-        widget.grid(row=1, column=2, rowspan=3, sticky="ns")
-        self.widgets["s_wkfiles"] = widget
-        widget = tk.Listbox(
-            frame,
+        self.frames["middle"] = ttk.Frame(self)
+        self.frames["middle"].grid(row=2, columnspan=3)
+
+        self.widgets["l_wkfiles"] = ttk.Label(self.frames["middle"], text="Workshop Files")
+        self.widgets["l_wkfiles"].grid(row=0, column=1)
+
+        self.widgets["s_wkfiles"] = ttk.Scrollbar(self.frames["middle"])
+        self.widgets["s_wkfiles"].grid(row=1, column=2, rowspan=3, sticky="ns")
+
             width=30,
             selectmode=tk.SINGLE,
             yscrollcommand=self.widgets["s_wkfiles"].set,
@@ -407,28 +404,27 @@ class MainApp(tk.Frame):
         widget.grid(row=1, column=0, rowspan=1)
         self.widgets["l_preview"] = widget
 
-        frame = tk.Frame(self.frames["middle"])
-        frame.grid(row=1, column=3)
-        self.frames["middle.right"] = frame
+        self.frames["middle.right"] = ttk.Frame(self.frames["middle"])
+        self.frames["middle.right"].grid(row=1, column=3)
 
-        widget = tk.Button(
-            frame,
+        self.widgets["b_tolabs"] = ttk.Button(
+            self.frames["middle.right"],
             text="Activate",
             command=self.copytolabs,
         )
         widget.grid(row=1, column=3, sticky="wes")
         self.widgets["b_tolabs"] = widget
 
-        widget = tk.Button(
-            frame,
+        self.widgets["b_restore"] = ttk.Button(
+            self.frames["middle.right"],
             text="Restore Underpass",
             command=self.deleteunderpass,
         )
         widget.grid(row=2, column=3, sticky="n")
         self.widgets["b_restore"] = widget
 
-        widget = tk.Button(
-            frame,
+        self.widgets["b_openfolder"] = ttk.Button(
+            self.frames["middle.right"],
             text="Open Folder",
             command=self.openfolder,
         )
