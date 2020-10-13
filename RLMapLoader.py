@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
+from tkinter import ttk
 import tkinter.messagebox as msg
 import webbrowser
 
@@ -87,7 +88,7 @@ default_dirs = {
 }
 
 
-class MainApp(tk.Frame):
+class MainApp(ttk.Frame):
     """Class defining app behaviour. Acts as a tkinter frame."""
 
     def __init__(self, master):
@@ -99,7 +100,7 @@ class MainApp(tk.Frame):
         self.workshop_dir.set(WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
-        self.img_size = (160, 160)
+        self.img_size = (240, 158)
         # Generate a default image to be used for preview.
         self.img_default = self.gendefaultimg("No preview")
         self.modfiles = {}
@@ -121,9 +122,9 @@ class MainApp(tk.Frame):
         except OSError:
             is_dir = False
         if is_dir:
-            widget.config(fg="Black")
+            widget.config(style="TEntry")
         else:
-            widget.config(fg="Red")
+            widget.config(style="R.TEntry")
 
     def getselected(self):
         """Return the name and path of the selected map.
@@ -237,6 +238,8 @@ class MainApp(tk.Frame):
 
         self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
+        self.checkdir(self.widgets["e_mdir"])
+        self.checkdir(self.widgets["e_wkdir"])
 
     def gendefaultimg(self, text):
         """Generate image to use when no preview image is available.
@@ -251,7 +254,7 @@ class MainApp(tk.Frame):
             font = ImageFont.load_default()
         img = Image.new("RGBA", self.img_size, (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        d.text((30, 65), text, (0, 0, 0, 255), font=font)
+        d.text((70, 66), text, (0, 0, 0, 255), font=font)
         return ImageTk.PhotoImage(img)
 
     def changeimg(self):
@@ -323,116 +326,112 @@ class MainApp(tk.Frame):
     def _initwidgets(self):
         """Initialise widgets."""
 
+        self.config(pad=4)
+
         self.widgets = {}
 
-        widget = tk.Label(self, text="Workshop dir:")
-        widget.grid(row=0, sticky="e")
-        self.widgets["l_wkdir"] = widget
+        self.widgets["l_wkdir"] = ttk.Label(self, text="Workshop dir:")
+        self.widgets["l_wkdir"].grid(row=0, sticky="e")
 
-        widget = tk.Entry(
+        ttk.Style().configure("R.TEntry", foreground="#f00")
+        self.widgets["e_wkdir"] = ttk.Entry(
             self,
             textvariable=self.workshop_dir,
             width=60,
         )
         self.workshop_dir.trace("w", multi(
-            partial(self.checkdir, widget),
+            partial(self.checkdir, self.widgets["e_wkdir"]),
             self.savedirs,
             self.fillwslist,
         ))
-        widget.grid(row=0, column=1)
-        self.checkdir(widget)
-        self.widgets["e_wkdir"] = widget
+        self.widgets["e_wkdir"].grid(row=0, column=1)
+        self.checkdir(self.widgets["e_wkdir"])
 
-        widget = tk.Label(self, text="Mods dir:")
-        widget.grid(row=1, sticky="e")
-        self.widgets["l_mdir"] = widget
+        self.widgets["l_mdir"] = ttk.Label(self, text="Mods dir:")
+        self.widgets["l_mdir"].grid(row=1, sticky="e")
 
-        widget = tk.Entry(
+        self.widgets["e_mdir"] = ttk.Entry(
             self,
             textvariable=self.mods_dir,
             width=60,
         )
         self.mods_dir.trace("w", multi(
-            partial(self.checkdir, widget),
+            partial(self.checkdir, self.widgets["e_mdir"]),
             self.savedirs,
         ))
-        widget.grid(row=1, column=1)
-        self.checkdir(widget)
-        self.widgets["e_mdir"] = widget
+        self.widgets["e_mdir"].grid(row=1, column=1)
+        self.checkdir(self.widgets["e_mdir"])
 
-        widget = tk.Button(
+        self.widgets["b_defaults"] = ttk.Button(
             self,
             text="Defaults",
             command=self.setdefaults
         )
-        widget.grid(row=0, column=2, rowspan=1, sticky="we")
-        self.widgets["b_defaults"] = widget
+        self.widgets["b_defaults"].grid(row=0, column=2, rowspan=1, sticky="we")
 
-        widget = tk.Button(
+        self.widgets["b_mkmods"] = ttk.Button(
             self,
             text="Make mods folder",
             command=warnwrap(self.makemods)
         )
-        widget.grid(row=1, column=2, rowspan=1)
-        self.widgets["b_mkmods"] = widget
+        self.widgets["b_mkmods"].grid(row=1, column=2, rowspan=1)
 
-        frame = tk.Frame(self)
-        frame.grid(row=2, columnspan=3)
-        self.frames["middle"] = frame
-        widget = tk.Label(frame, text="Workshop Files")
-        widget.grid(row=0, column=1)
-        self.widgets["l_wkfiles"] = widget
-        widget = tk.Scrollbar(frame)
-        widget.grid(row=1, column=2, rowspan=3, sticky="ns")
-        self.widgets["s_wkfiles"] = widget
-        widget = tk.Listbox(
-            frame,
+        self.frames["middle"] = ttk.Frame(self)
+        self.frames["middle"].grid(row=2, columnspan=3)
+
+        self.widgets["l_wkfiles"] = ttk.Label(self.frames["middle"], text="Workshop Files")
+        self.widgets["l_wkfiles"].grid(row=0, column=1)
+
+        self.widgets["s_wkfiles"] = ttk.Scrollbar(self.frames["middle"])
+        self.widgets["s_wkfiles"].grid(row=1, column=2, rowspan=3, sticky="ns")
+
+        self.widgets["lb_wkfiles"] = tk.Listbox(
+            self.frames["middle"],
             width=30,
+            highlightthickness=-1,
+            activestyle=tk.NONE,
+            relief=tk.SOLID,
             selectmode=tk.SINGLE,
             yscrollcommand=self.widgets["s_wkfiles"].set,
         )
-        self.widgets["s_wkfiles"].config(command=widget.yview)
-        widget.insert(tk.END, *self.wkfiles.keys())
-        widget.grid(row=1, column=1, rowspan=1)
-        self.widgets["lb_wkfiles"] = widget
+        self.widgets["s_wkfiles"].config(command=self.widgets["lb_wkfiles"].yview)
+        self.widgets["lb_wkfiles"].insert(tk.END, *self.wkfiles.keys())
+        self.widgets["lb_wkfiles"].grid(row=1, column=1, rowspan=1)
 
         width, height = self.img_size
-        widget = tk.Label(
-            frame,
+        self.widgets["l_preview"] = tk.Label(
+            self.frames["middle"],
             image=self.img_default,
             width=width,
-            height=height
+            height=height,
+            bd=2,
+            padx=5
         )
-        widget.grid(row=1, column=0, rowspan=1)
-        self.widgets["l_preview"] = widget
+        self.widgets["l_preview"].grid(row=1, column=0, rowspan=1)
 
-        frame = tk.Frame(self.frames["middle"])
-        frame.grid(row=1, column=3)
-        self.frames["middle.right"] = frame
+        self.frames["middle.right"] = ttk.Frame(self.frames["middle"])
+        self.frames["middle.right"].grid(row=1, column=3)
 
-        widget = tk.Button(
-            frame,
+        self.widgets["b_tolabs"] = ttk.Button(
+            self.frames["middle.right"],
             text="Activate",
             command=self.copytolabs,
         )
-        widget.grid(row=1, column=3, sticky="wes")
-        self.widgets["b_tolabs"] = widget
+        self.widgets["b_tolabs"].grid(row=1, column=3, sticky="wes")
 
-        widget = tk.Button(
-            frame,
+        self.widgets["b_restore"] = ttk.Button(
+            self.frames["middle.right"],
             text="Restore Underpass",
             command=self.deleteunderpass,
         )
-        widget.grid(row=2, column=3, sticky="n")
-        self.widgets["b_restore"] = widget
+        self.widgets["b_restore"].grid(row=2, column=3, sticky="n")
 
-        widget = tk.Button(
-            frame,
+        self.widgets["b_openfolder"] = ttk.Button(
+            self.frames["middle.right"],
             text="Open Folder",
             command=self.openfolder,
         )
-        widget.grid(row=3, column=3, sticky="wen")
-        self.widgets["b_openfolder"] = widget
+        self.widgets["b_openfolder"].grid(row=3, column=3, sticky="wen")
 
 
 def start():
@@ -441,6 +440,7 @@ def start():
     getdirs()
     root = tk.Tk()
     root.title("RLMapLoader")
+    root.iconbitmap("icon.ico")
     root.resizable(False, False)
     # Catch object to avoid garbage collection.
     app = MainApp(root) # noqa
