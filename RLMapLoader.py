@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from functools import partial
+from itertools import chain
 import json
 from pathlib import Path
 from shutil import copyfile
@@ -195,9 +196,10 @@ class MainApp(ttk.Frame):
 
         path = Path(self.workshop_dir.get())
         try:
-            udks = OrderedDict((p.name, p) for p in sorted(path.glob("*/*.udk"), key=lambda p: p.name.lower()))
+            paths = sorted(chain(path.glob("*/*.udk"), path.glob("*.udk")), key=lambda p: p.name.lower())
         except OSError:
             return OrderedDict()
+        udks = OrderedDict((p.name, p) for p in paths)
         return udks
 
     def fillwslist(self, *args):
