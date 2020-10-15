@@ -149,6 +149,9 @@ class MainApp(ttk.Frame):
             msg.showerror("Activate", "Cannot activate: No map selected")
             return
         name, src = selection
+        if not Path(src).is_file():
+            msg.showerror("Activate", "Cannot activate: File not found")
+            return
         dest = Path(self.mods_dir.get())
         try:
             is_dir = dest.is_dir()
