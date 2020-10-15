@@ -268,16 +268,14 @@ class MainApp(ttk.Frame):
         filetypes = ("*.png", "*.jpg", "*.jpeg", "*.bmp")
 
         selection = self.getselected()
-        if not selection:
-            self.image = self.img_default
-            self.widgets["l_preview"].configure(image=self.image)
-            return
-        path = selection[1].parent
-        images = []
-        for ext in filetypes:
-            images.extend(Path(path).glob(ext))
+        # Load default.png if it exists, else list is empty.
+        images = list(Path("").glob("default.png"))
+        if selection:
+            path = selection[1].parent
+            for ext in filetypes:
+                images.extend(Path(path).glob(ext))
         if images:
-            im = Image.open(images[0])
+            im = Image.open(images[-1])
             size = self.img_size
             im.thumbnail(size)
             self.image = ImageTk.PhotoImage(im)
@@ -403,12 +401,13 @@ class MainApp(ttk.Frame):
         width, height = self.img_size
         self.widgets["l_preview"] = tk.Label(
             self.frames["middle"],
-            image=self.img_default,
+            image=None,
             width=width,
             height=height,
             bd=2,
             padx=5
         )
+        self.changeimg()
         self.widgets["l_preview"].grid(row=1, column=0, rowspan=1)
 
         self.frames["middle.right"] = ttk.Frame(self.frames["middle"])
