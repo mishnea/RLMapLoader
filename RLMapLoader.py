@@ -401,12 +401,13 @@ class MainApp(ttk.Frame):
         width, height = self.img_size
         self.widgets["l_preview"] = tk.Label(
             self.frames["middle"],
-            image=self.img_default,
+            image=None,
             width=width,
             height=height,
             bd=2,
             padx=5
         )
+        self.changeimg()
         self.widgets["l_preview"].grid(row=1, column=0, rowspan=1)
 
         self.frames["middle.right"] = ttk.Frame(self.frames["middle"])
