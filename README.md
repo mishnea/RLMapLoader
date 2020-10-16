@@ -13,15 +13,15 @@ RLMapLoader is also designed to work for Epic Games (EG) users, who need to tran
 ### Steam users
 
 The workshop directory should be the same or similar to the one that appears by default. You will likely only have to change the drive letter.\
-The same goes for the mods directory. However, there is no folder called `mods` within `CookedPCConsole` by default. You can either create it manually, or by clicking 'Make Mods Folder' when you've entered the `CookedPCConsole` directory.\
-The default directories can be recovered at any time by clicking 'Defaults'.\
-Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking 'Activate'.
+The same goes for the mods directory. However, there is no folder called `mods` within `CookedPCConsole` by default. You can either create it manually, or by clicking **Make Mods Folder** when you've set the `CookedPCConsole` directory.\
+The default directories can be recovered at any time by clicking **Defaults**.\
+Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking **Activate**.
 
 ### Epic Games users
 
 The workshop directory should be set to any folder containing your custom maps. For users who also have the Steam version of Rocket League, the Steam workshop folder can also still be used.\
-The mods directory should be set similarly to the Steam instructions. A default EG directory can be set by clicking on 'Options > Epic Games mode' and clicking 'Defaults'. From there, you likely only need to change the drive letter and/or click 'Make Mods Folder'.\
-Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking 'Activate'.
+The mods directory should be set similarly to the Steam instructions. A default EG directory can be set by clicking on **Options > Epic Games mode** and clicking **Defaults**. From there, you likely only need to change the drive letter and/or click **Make Mods Folder**.\
+Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking **Activate**.
 
 ### Launching the selected map
 
@@ -44,7 +44,7 @@ This is enough to develop and run RLMapLoader, however it has to be run using a 
 1. Right click in windows explorer or on the desktop, and click **create shortcut**.
 2. In the box, type `<your directory>\RLMapLoader\.venv\Scripts\python.exe "<your directory>\RLMapLoader\RLMapLoader.py"`.
 3. Click **Next**.
-4. Name the shortcut whatever you like, and click **finish**.
+4. Name the shortcut whatever you like, and click **Finish**.
 5. Right click the shortcut, and click properties.
 6. Change the 'Start in:' field to `<your directory>\RLMapLoader\`.
 
