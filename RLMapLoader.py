@@ -318,8 +318,10 @@ class MainApp(tk.Tk):
 
         path = Path(self.mods_dir.get())
         if path.name != "CookedPCConsole":
-            msg.showerror("Make mods folder", "Can't create mods folder. Must be located within \\CookedPCConsole")
-            return
+            path = path.parent
+            if path.name != "CookedPCConsole":
+                msg.showerror("Make mods folder", "Can't create mods folder. Must be located within \\CookedPCConsole")
+                return
         modspath = Path(path, "mods")
         try:
             modspath.mkdir()
