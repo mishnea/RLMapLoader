@@ -436,6 +436,7 @@ class MainApp(tk.Tk):
             relief=tk.SOLID,
             selectmode=tk.SINGLE,
             yscrollcommand=self.widgets["s_wkfiles"].set,
+            cursor="hand2"
         )
         self.widgets["s_wkfiles"].config(command=self.widgets["lb_wkfiles"].yview)
         self.widgets["lb_wkfiles"].insert(tk.END, *self.wkfiles.keys())
