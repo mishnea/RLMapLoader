@@ -81,11 +81,13 @@ def multi(*funcs):
 
 MODS_DIR = ""
 WORKSHOP_DIR = ""
+HELP_URL = "https://github.com/mishnea/RLMapLoader#usage"
 
 
 default_dirs = {
-    "WORKSHOP_DIR": "C:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\252950",
-    "MODS_DIR": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\rocketleague\\TAGame\\CookedPCConsole\\mods",
+    "WORKSHOP_DIR": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
+    "MODS_DIR": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
+    "EG_MODS_DIR": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
 }
 
 
@@ -99,6 +101,9 @@ class MainApp(tk.Tk):
         self.iconbitmap("icon.ico")
         self.resizable(False, False)
 
+        self.eg_mode = tk.IntVar(value=0)
+        self.mods_dir = tk.StringVar(value=MODS_DIR)
+        self.workshop_dir = tk.StringVar(value=WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
         self.img_size = (240, 158)
@@ -108,6 +113,7 @@ class MainApp(tk.Tk):
         self.frames = {}
         self.widgets = {}
         self._initwidgets()
+        self._initmenu()
         # Start preview update on a timer.
         self.updateimg()
 
@@ -241,7 +247,10 @@ class MainApp(tk.Tk):
     def setdefaults(self, *args):
         """Set entry widget values to the paths in default_dirs."""
 
-        self.mods_dir.set(default_dirs["MODS_DIR"])
+        if self.eg_mode.get():
+            self.mods_dir.set(default_dirs["EG_MODS_DIR"])
+        else:
+            self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
         self.checkdir(self.widgets["e_mdir"])
         self.checkdir(self.widgets["e_wkdir"])
@@ -468,6 +477,32 @@ class MainApp(tk.Tk):
         )
         self.widgets["b_openfolder"].grid(row=3, column=3, sticky="wen")
 
+    def _initmenu(self):
+        self.topmenu = tk.Menu(self)
+
+        self.helpmenu = tk.Menu(self, tearoff=0)
+        self.helpmenu.add_command(
+            label="Usage instructions",
+            command=lambda: webbrowser.open(HELP_URL),
+        )
+
+        self.optionsmenu = tk.Menu(self, tearoff=0)
+        self.optionsmenu.add_checkbutton(
+            label="Epic Games mode",
+            var=self.eg_mode,
+            offvalue=0,
+            onvalue=1
+        )
+        self.optionsmenu.add_separator()
+        self.optionsmenu.add_command(
+            label="Exit",
+            command=self.destroy
+        )
+
+        self.topmenu.add_cascade(label="Options", menu=self.optionsmenu)
+        self.topmenu.add_cascade(label="Help", menu=self.helpmenu)
+
+        self.config(menu=self.topmenu)
 
 
 def start():
