@@ -1,38 +1,73 @@
 # RLMapLoader
+
 Utility for easily setting up custom Rocket League maps to host locally.\
-[YouTube Demonstration](https://youtu.be/xliaWYAAnXU)
+**Windows only. Not tested on versions before Windows 10**
 
 ## Intro
-The program presents a GUI which allows the user to see all of the '.udk' files within the Steam workshop maps folder for RL ('\Steam\steamapps\workshop\content\252950'). It also allows the user to select the map they want to host locally and copy it to '\CookedPCConsole\mods\Labs_Underpass_P.upk' by clicking 'Activate'. By copying to '\mods', the original Underpass map isn't overwritten, but will still take precedence when loading. The GUI has some extra features for simple user-friendliness, such as popup dialogs to present warnings, errors and info.\
-**The program was created specifically for Windows 10 and is not guaranteed to work with any other OS.**
 
-## Setup
-
-The following instructions will work for Windows users only:
-
-1. Make sure you have Python 3.7 or higher installed. Previous Python 3 versions may work, but it is not guaranteed.
-2. Download or clone the repository to your desired location.
-3. Open PowerShell.
-4. Navigate to the RLMapLoader folder on your computer, using `cd <path to folder>`.
-5. Run `pip install -r requirements.txt`. (This step will affect your global Python environment; I recommend using a virtual environment, but this makes running the program slightly more complicated.)
-
-You sould now be able to run RLMapLoader by double clicking 'RLMapLoader.py', or 'RLMapLoader.pyw' to run without showing the console.
+RLMapLoader lets you swap between Steam workshop maps in a couple of clicks, skipping the tedium of manually doing it. It also shows a preview image of the selected map if the creator provided one, helping you to decode the cryptic file names.\
+RLMapLoader is also designed to work for Epic Games (EG) users, who need to transfer '.udk' files to load custom maps at all.
 
 ## Usage
 
-### First run
-On running the first time, the program will create a file called dirs.json in the current working directory, given it does not already exist. This file contains dict holding the paths of the RL workshop maps directory and mods directory. The file will contain the default paths for both dirs as defined in RLModSetup.py, until they are changed by the user.
+### Steam users
 
-### Changing dirs
-The GUI has two entry fields, labeled 'Workshop dir' and 'Mods dir'. The text in the fields should be paths to '\Steam\steamapps\workshop\content\252950' and 'rocketleague\TAGame\CookedPCConsole\mods' respectively. The former is where the program looks for '.udk's and the latter is where the program copies the selected '.udk' to. Clicking Defaults next to the workshop field sets both fields to their default values, defined in the program. All changes to these fields are saved, so that on running, the last values from the previous session are loaded in. The program will only look in an existing file directory, ending in '252950'.
+The workshop directory should be the same or similar to the one that appears by default. You will likely only have to change the drive letter.\
+The same goes for the mods directory. However, there is no folder called `mods` within `CookedPCConsole` by default. You can either create it manually, or by clicking 'Make Mods Folder' when you've entered the `CookedPCConsole` directory.\
+The default directories can be recovered at any time by clicking 'Defaults'.\
+Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking 'Activate'.
 
-### Swapping maps
-Given the directories are valid, selecting the desired '.udk' from the list followed by clicking 'Activate' will copy the file from the workshop folder to the mods folder, as "Labs_Underpass_P.upk". Any existing file with that name is simply overwritten.
+### Epic Games users
 
-### Restoring Underpass
-Clicking 'Restore Underpass' will delete the existing 'Labs_Underpass_P.upk' within mods, allowing RL to load Underpass. This is independent of the workshop path but requires the correct mods path.
+The workshop directory should be set to any folder containing your custom maps. For users who also have the Steam version of Rocket League, the Steam workshop folder can also still be used.\
+The mods directory should be set similarly to the Steam instructions. A default EG directory can be set by clicking on 'Options > Epic Games mode' and clicking 'Defaults'. From there, you likely only need to change the drive letter and/or click 'Make Mods Folder'.\
+Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking 'Activate'.
+
+### Launching the selected map
+
+To launch the map that you activated, you must load Underpass in Training, Exhibition or Local Lobby.
+
+## Python Source Setup
+
+### Using virtual environment
+
+1. Download or clone the repository to your desired location.
+2. Open PowerShell.
+3. `cd` into the RLMapLoader directory.
+4. Run the following:
+   - `python -m venv .venv`
+   - `.\.venv\\Scripts\\Activate.ps1`
+   - `pip install -m requirements.txt`
+
+This is enough to develop and run RLMapLoader, however it has to be run using a command line. To create a shortcut to run RLMapLoader using the venv interpreter, follow the next steps:
+
+1. Right click in windows explorer or on the desktop, and click **create shortcut**.
+2. In the box, type `<your directory>\RLMapLoader\.venv\Scripts\python.exe "<your directory>\RLMapLoader\RLMapLoader.py"`.
+3. Click **Next**.
+4. Name the shortcut whatever you like, and click **finish**.
+5. Right click the shortcut, and click properties.
+6. Change the 'Start in:' field to `<your directory>\RLMapLoader\`.
+
+_Note: if you want to hide the console while running the program, replace `python.exe` in the instructions with `pythonw.exe`._
+
+### No virtual environment
+
+1. Download or clone the repository to your desired location.
+2. Open PowerShell.
+3. `cd` into the RLMapLoader directory.
+4. Run `pip install -r requirements.txt`.
+
+You should now be able to run RLMapLoader by double clicking 'RLMapLoader.py', or 'RLMapLoader.pyw' to run without showing the console.
 
 ## Requirements
+
+### Executable
+
+- Windows 10 (might work on older versions)
+
+### Python
+
+- Windows 10 (might work on older versions)
 - Python 3.x (tested on Python 3.7.8 and 3.8.4)
+- Tkinter
 - PIL (`pip install pillow`)
-- Windows 10 (may work on other OSs)

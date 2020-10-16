@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 import tkinter.messagebox as msg
 import webbrowser
 
@@ -81,24 +81,29 @@ def multi(*funcs):
 
 MODS_DIR = ""
 WORKSHOP_DIR = ""
+HELP_URL = "https://github.com/mishnea/RLMapLoader#usage"
 
 
 default_dirs = {
-    "WORKSHOP_DIR": "C:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\252950",
-    "MODS_DIR": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\rocketleague\\TAGame\\CookedPCConsole\\mods",
+    "WORKSHOP_DIR": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
+    "MODS_DIR": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
+    "EG_MODS_DIR": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
 }
 
 
-class MainApp(ttk.Frame):
+class MainApp(tk.Tk):
     """Class defining app behaviour. Acts as a tkinter frame."""
 
-    def __init__(self, master):
-        super().__init__(master)
-        self.pack()
-        self.mods_dir = tk.StringVar()
-        self.mods_dir.set(MODS_DIR)
-        self.workshop_dir = tk.StringVar()
-        self.workshop_dir.set(WORKSHOP_DIR)
+    def __init__(self):
+        super().__init__()
+
+        self.title("RLMapLoader")
+        self.iconbitmap("icon.ico")
+        self.resizable(False, False)
+
+        self.eg_mode = tk.IntVar(value=0)
+        self.mods_dir = tk.StringVar(value=MODS_DIR)
+        self.workshop_dir = tk.StringVar(value=WORKSHOP_DIR)
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
         self.img_size = (240, 158)
@@ -108,6 +113,7 @@ class MainApp(ttk.Frame):
         self.frames = {}
         self.widgets = {}
         self._initwidgets()
+        self._initmenu()
         # Start preview update on a timer.
         self.updateimg()
 
@@ -241,7 +247,10 @@ class MainApp(ttk.Frame):
     def setdefaults(self, *args):
         """Set entry widget values to the paths in default_dirs."""
 
-        self.mods_dir.set(default_dirs["MODS_DIR"])
+        if self.eg_mode.get():
+            self.mods_dir.set(default_dirs["EG_MODS_DIR"])
+        else:
+            self.mods_dir.set(default_dirs["MODS_DIR"])
         self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
         self.checkdir(self.widgets["e_mdir"])
         self.checkdir(self.widgets["e_wkdir"])
@@ -309,8 +318,10 @@ class MainApp(ttk.Frame):
 
         path = Path(self.mods_dir.get())
         if path.name != "CookedPCConsole":
-            msg.showerror("Make mods folder", "Can't create mods folder. Must be located within \\CookedPCConsole")
-            return
+            path = path.parent
+            if path.name != "CookedPCConsole":
+                msg.showerror("Make mods folder", "Can't create mods folder. Must be located within \\CookedPCConsole")
+                return
         modspath = Path(path, "mods")
         try:
             modspath.mkdir()
@@ -326,21 +337,36 @@ class MainApp(ttk.Frame):
                 str(modspath)
             )
 
+    def browsewkdir(self):
+        path = filedialog.askdirectory(title="Select Workshop Folder")
+        if not path:
+            return
+        self.workshop_dir.set(path)
+
+    def browsemdir(self):
+        path = filedialog.askdirectory(title="Select Mods Folder")
+        if not path:
+            return
+        self.mods_dir.set(path)
+
     def _initwidgets(self):
         """Initialise widgets."""
 
-        self.config(pad=4)
+        self.frames["main"] = ttk.Frame(self)
+        self.frames["main"].pack()
+
+        self.frames["main"].config(pad=4)
 
         self.widgets = {}
 
-        self.widgets["l_wkdir"] = ttk.Label(self, text="Workshop dir:")
+        self.widgets["l_wkdir"] = ttk.Label(self.frames["main"], text="Workshop dir:")
         self.widgets["l_wkdir"].grid(row=0, sticky="e")
 
         ttk.Style().configure("R.TEntry", foreground="#f00")
         self.widgets["e_wkdir"] = ttk.Entry(
-            self,
+            self.frames["main"],
             textvariable=self.workshop_dir,
-            width=60,
+            width=60
         )
         self.workshop_dir.trace("w", multi(
             partial(self.checkdir, self.widgets["e_wkdir"]),
@@ -350,13 +376,13 @@ class MainApp(ttk.Frame):
         self.widgets["e_wkdir"].grid(row=0, column=1)
         self.checkdir(self.widgets["e_wkdir"])
 
-        self.widgets["l_mdir"] = ttk.Label(self, text="Mods dir:")
+        self.widgets["l_mdir"] = ttk.Label(self.frames["main"], text="Mods dir:")
         self.widgets["l_mdir"].grid(row=1, sticky="e")
 
         self.widgets["e_mdir"] = ttk.Entry(
-            self,
+            self.frames["main"],
             textvariable=self.mods_dir,
-            width=60,
+            width=60
         )
         self.mods_dir.trace("w", multi(
             partial(self.checkdir, self.widgets["e_mdir"]),
@@ -365,22 +391,38 @@ class MainApp(ttk.Frame):
         self.widgets["e_mdir"].grid(row=1, column=1)
         self.checkdir(self.widgets["e_mdir"])
 
+        self.widgets["b_wkbrowse"] = ttk.Button(
+            self.frames["main"],
+            text="...",
+            width=2,
+            command=self.browsewkdir
+        )
+        self.widgets["b_wkbrowse"].grid(row=0, column=2)
+
+        self.widgets["b_mbrowse"] = ttk.Button(
+            self.frames["main"],
+            text="...",
+            width=2,
+            command=self.browsemdir
+        )
+        self.widgets["b_mbrowse"].grid(row=1, column=2)
+
         self.widgets["b_defaults"] = ttk.Button(
-            self,
+            self.frames["main"],
             text="Defaults",
             command=self.setdefaults
         )
-        self.widgets["b_defaults"].grid(row=0, column=2, rowspan=1, sticky="we")
+        self.widgets["b_defaults"].grid(row=0, column=3, rowspan=1, sticky="we")
 
         self.widgets["b_mkmods"] = ttk.Button(
-            self,
-            text="Make mods folder",
+            self.frames["main"],
+            text="Make Mods Folder",
             command=warnwrap(self.makemods)
         )
-        self.widgets["b_mkmods"].grid(row=1, column=2, rowspan=1)
+        self.widgets["b_mkmods"].grid(row=1, column=3, rowspan=1)
 
-        self.frames["middle"] = ttk.Frame(self)
-        self.frames["middle"].grid(row=2, columnspan=3)
+        self.frames["middle"] = ttk.Frame(self.frames["main"])
+        self.frames["middle"].grid(row=2, columnspan=4)
 
         self.widgets["l_wkfiles"] = ttk.Label(self.frames["middle"], text="Workshop Files")
         self.widgets["l_wkfiles"].grid(row=0, column=1)
@@ -396,6 +438,7 @@ class MainApp(ttk.Frame):
             relief=tk.SOLID,
             selectmode=tk.SINGLE,
             yscrollcommand=self.widgets["s_wkfiles"].set,
+            cursor="hand2"
         )
         self.widgets["s_wkfiles"].config(command=self.widgets["lb_wkfiles"].yview)
         self.widgets["lb_wkfiles"].insert(tk.END, *self.wkfiles.keys())
@@ -437,18 +480,41 @@ class MainApp(ttk.Frame):
         )
         self.widgets["b_openfolder"].grid(row=3, column=3, sticky="wen")
 
+    def _initmenu(self):
+        self.topmenu = tk.Menu(self)
+
+        self.helpmenu = tk.Menu(self, tearoff=0)
+        self.helpmenu.add_command(
+            label="Usage instructions",
+            command=lambda: webbrowser.open(HELP_URL),
+        )
+
+        self.optionsmenu = tk.Menu(self, tearoff=0)
+        self.optionsmenu.add_checkbutton(
+            label="Epic Games mode",
+            var=self.eg_mode,
+            offvalue=0,
+            onvalue=1
+        )
+        self.optionsmenu.add_separator()
+        self.optionsmenu.add_command(
+            label="Exit",
+            command=self.destroy
+        )
+
+        self.topmenu.add_cascade(label="Options", menu=self.optionsmenu)
+        self.topmenu.add_cascade(label="Help", menu=self.helpmenu)
+
+        self.config(menu=self.topmenu)
+
 
 def start():
     """Start the program."""
 
     getdirs()
-    root = tk.Tk()
-    root.title("RLMapLoader")
-    root.iconbitmap("icon.ico")
-    root.resizable(False, False)
     # Catch object to avoid garbage collection.
-    app = MainApp(root) # noqa
-    root.mainloop()
+    app = MainApp() # noqa
+    app.mainloop()
 
 
 if __name__ == "__main__":
