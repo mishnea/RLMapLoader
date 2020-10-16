@@ -89,16 +89,16 @@ default_dirs = {
 }
 
 
-class MainApp(ttk.Frame):
+class MainApp(tk.Tk):
     """Class defining app behaviour. Acts as a tkinter frame."""
 
-    def __init__(self, master):
-        super().__init__(master)
-        self.pack()
-        self.mods_dir = tk.StringVar()
-        self.mods_dir.set(MODS_DIR)
-        self.workshop_dir = tk.StringVar()
-        self.workshop_dir.set(WORKSHOP_DIR)
+    def __init__(self):
+        super().__init__()
+
+        self.title("RLMapLoader")
+        self.iconbitmap("icon.ico")
+        self.resizable(False, False)
+
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
         self.img_size = (240, 158)
@@ -341,18 +341,21 @@ class MainApp(ttk.Frame):
     def _initwidgets(self):
         """Initialise widgets."""
 
-        self.config(pad=4)
+        self.frames["main"] = ttk.Frame(self)
+        self.frames["main"].pack()
+
+        self.frames["main"].config(pad=4)
 
         self.widgets = {}
 
-        self.widgets["l_wkdir"] = ttk.Label(self, text="Workshop dir:")
+        self.widgets["l_wkdir"] = ttk.Label(self.frames["main"], text="Workshop dir:")
         self.widgets["l_wkdir"].grid(row=0, sticky="e")
 
         ttk.Style().configure("R.TEntry", foreground="#f00")
         self.widgets["e_wkdir"] = ttk.Entry(
-            self,
+            self.frames["main"],
             textvariable=self.workshop_dir,
-            width=60,
+            width=60
         )
         self.workshop_dir.trace("w", multi(
             partial(self.checkdir, self.widgets["e_wkdir"]),
@@ -362,13 +365,13 @@ class MainApp(ttk.Frame):
         self.widgets["e_wkdir"].grid(row=0, column=1)
         self.checkdir(self.widgets["e_wkdir"])
 
-        self.widgets["l_mdir"] = ttk.Label(self, text="Mods dir:")
+        self.widgets["l_mdir"] = ttk.Label(self.frames["main"], text="Mods dir:")
         self.widgets["l_mdir"].grid(row=1, sticky="e")
 
         self.widgets["e_mdir"] = ttk.Entry(
-            self,
+            self.frames["main"],
             textvariable=self.mods_dir,
-            width=60,
+            width=60
         )
         self.mods_dir.trace("w", multi(
             partial(self.checkdir, self.widgets["e_mdir"]),
@@ -394,21 +397,21 @@ class MainApp(ttk.Frame):
         self.widgets["b_mbrowse"].grid(row=1, column=2)
 
         self.widgets["b_defaults"] = ttk.Button(
-            self,
+            self.frames["main"],
             text="Defaults",
             command=self.setdefaults
         )
-        self.widgets["b_defaults"].grid(row=0, column=2, rowspan=1, sticky="we")
+        self.widgets["b_defaults"].grid(row=0, column=3, rowspan=1, sticky="we")
 
         self.widgets["b_mkmods"] = ttk.Button(
-            self,
-            text="Make mods folder",
+            self.frames["main"],
+            text="Make Mods Folder",
             command=warnwrap(self.makemods)
         )
-        self.widgets["b_mkmods"].grid(row=1, column=2, rowspan=1)
+        self.widgets["b_mkmods"].grid(row=1, column=3, rowspan=1)
 
-        self.frames["middle"] = ttk.Frame(self)
-        self.frames["middle"].grid(row=2, columnspan=3)
+        self.frames["middle"] = ttk.Frame(self.frames["main"])
+        self.frames["middle"].grid(row=2, columnspan=4)
 
         self.widgets["l_wkfiles"] = ttk.Label(self.frames["middle"], text="Workshop Files")
         self.widgets["l_wkfiles"].grid(row=0, column=1)
@@ -466,17 +469,14 @@ class MainApp(ttk.Frame):
         self.widgets["b_openfolder"].grid(row=3, column=3, sticky="wen")
 
 
+
 def start():
     """Start the program."""
 
     getdirs()
-    root = tk.Tk()
-    root.title("RLMapLoader")
-    root.iconbitmap("icon.ico")
-    root.resizable(False, False)
     # Catch object to avoid garbage collection.
-    app = MainApp(root) # noqa
-    root.mainloop()
+    app = MainApp() # noqa
+    app.mainloop()
 
 
 if __name__ == "__main__":
