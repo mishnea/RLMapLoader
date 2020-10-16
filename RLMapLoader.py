@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 import tkinter.messagebox as msg
 import webbrowser
 
@@ -326,6 +326,18 @@ class MainApp(ttk.Frame):
                 str(modspath)
             )
 
+    def browsewkdir(self):
+        path = filedialog.askdirectory(title="Select Workshop Folder")
+        if not path:
+            return
+        self.workshop_dir.set(path)
+
+    def browsemdir(self):
+        path = filedialog.askdirectory(title="Select Mods Folder")
+        if not path:
+            return
+        self.mods_dir.set(path)
+
     def _initwidgets(self):
         """Initialise widgets."""
 
@@ -364,6 +376,22 @@ class MainApp(ttk.Frame):
         ))
         self.widgets["e_mdir"].grid(row=1, column=1)
         self.checkdir(self.widgets["e_mdir"])
+
+        self.widgets["b_wkbrowse"] = ttk.Button(
+            self.frames["main"],
+            text="...",
+            width=2,
+            command=self.browsewkdir
+        )
+        self.widgets["b_wkbrowse"].grid(row=0, column=2)
+
+        self.widgets["b_mbrowse"] = ttk.Button(
+            self.frames["main"],
+            text="...",
+            width=2,
+            command=self.browsemdir
+        )
+        self.widgets["b_mbrowse"].grid(row=1, column=2)
 
         self.widgets["b_defaults"] = ttk.Button(
             self,
