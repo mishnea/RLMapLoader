@@ -1,7 +1,7 @@
 # RLMapLoader
 
 Utility for easily setting up custom Rocket League maps to host locally.\
-**Windows only. Not tested on versions before Windows 10**
+**Windows only. Not tested on versions before Windows 10.**
 
 ## Intro
 
