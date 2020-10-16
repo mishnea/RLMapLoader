@@ -50,7 +50,7 @@ This is enough to develop and run RLMapLoader, however it has to be run using a 
 
 _Note: if you want to hide the console while running the program, replace `python.exe` in the instructions with `pythonw.exe`._
 
-### No virtual environment
+### Without virtual environment
 
 1. Download or clone the repository to your desired location.
 2. Open PowerShell.
