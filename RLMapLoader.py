@@ -247,13 +247,14 @@ class MainApp(tk.Tk):
     def setdefaults(self, *args):
         """Set entry widget values to the paths in default_dirs."""
 
+        self.widgets["e_wkdir"].delete(0, tk.END)
+        self.widgets["e_mdir"].delete(0, tk.END)
+
         if self.eg_mode.get():
-            self.mods_dir.set(default_dirs["EG_MODS_DIR"])
+            self.widgets["e_mdir"].insert(0, default_dirs["EG_MODS_DIR"])
         else:
-            self.mods_dir.set(default_dirs["MODS_DIR"])
-        self.workshop_dir.set(default_dirs["WORKSHOP_DIR"])
-        self.checkdir(self.widgets["e_mdir"])
-        self.checkdir(self.widgets["e_wkdir"])
+            self.widgets["e_mdir"].insert(0, default_dirs["MODS_DIR"])
+        self.widgets["e_wkdir"].insert(0, default_dirs["WORKSHOP_DIR"])
 
     def gendefaultimg(self, text):
         """Generate image to use when no preview image is available.
@@ -326,28 +327,28 @@ class MainApp(tk.Tk):
         try:
             modspath.mkdir()
             msg.showinfo("Make mods folder", "Successfully created folder. Changed mods dir to new folder.")
-            self.mods_dir.set(
-                str(modspath)
-            )
+            self.widgets["e_mdir"].delete(0, tk.END)
+            self.widgets["e_mdir"].insert(0, str(modspath))
         except FileNotFoundError:
             msg.showerror("Make mods folder", "Path specified in mods dir is not a real directory")
         except FileExistsError:
             msg.showinfo("Make mods folder", "Mods folder already exists")
-            self.mods_dir.set(
-                str(modspath)
-            )
+            self.widgets["e_mdir"].delete(0, tk.END)
+            self.widgets["e_mdir"].insert(0, str(modspath))
 
     def browsewkdir(self):
         path = filedialog.askdirectory(title="Select Workshop Folder")
         if not path:
             return
-        self.workshop_dir.set(path)
+        self.widgets["e_wkdir"].delete(0, tk.END)
+        self.widgets["e_wkdir"].insert(0, path)
 
     def browsemdir(self):
         path = filedialog.askdirectory(title="Select Mods Folder")
         if not path:
             return
-        self.mods_dir.set(path)
+        self.widgets["e_mdir"].delete(0, tk.END)
+        self.widgets["e_mdir"].insert(0, path)
 
     def _initwidgets(self):
         """Initialise widgets."""
