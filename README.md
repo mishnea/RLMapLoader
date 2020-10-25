@@ -36,7 +36,7 @@ To launch the map that you activated, you must load Underpass in Training, Exhib
 3. `cd` into the RLMapLoader directory.
 4. Run the following:
    - `python -m venv .venv`
-   - `.\.venv\\Scripts\\Activate.ps1`
+   - `.\.venv\Scripts\Activate.ps1`
    - `pip install -m requirements.txt`
 
 This is enough to develop and run RLMapLoader, however it has to be run using a command line. To create a shortcut to run RLMapLoader using the venv interpreter, follow the next steps:
