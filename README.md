@@ -29,7 +29,7 @@ To launch the map that you activated, you must load Underpass in Training, Exhib
 
 ### Symbolic link mode
 
-Version 1.1.0 adds the option of creating symbolic links instead of copying files. This is faster and less taxing on your storage device. However, symlink mode requires administrator privileges or for Developer Mode to be enabled in Windows. Symlink mode is therefore not required. To activate symlink mode, click on **Options > Symlink mode**.
+Version 1.1.0 adds the option of creating symbolic links instead of copying files. This is faster and less taxing on your storage device. However, symlink mode requires administrator privileges or for Developer Mode to be enabled in Windows. Symlink mode is therefore not required. To activate symlink mode, click on **Options > Use symlinks**.
 
 ## Python Source Setup
 
