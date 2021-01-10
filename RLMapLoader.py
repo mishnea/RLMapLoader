@@ -59,6 +59,7 @@ class MainApp(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.onclose)
 
         self.loadcfg()
+        self.use_symlinks = tk.IntVar(value=self.usercfg.getint("UseSymlinks"))
         self.eg_mode = tk.IntVar(value=self.usercfg.getint("EGMode"))
         self.workshop_dir = tk.StringVar(value=self.usercfg["WorkshopDir"])
         if self.eg_mode.get():
@@ -109,6 +110,7 @@ class MainApp(tk.Tk):
                 "modsdir": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
                 "egmodsdir": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
                 "egmode": 0,
+                "usesymlinks": 0,
             }
             self.settings["user"] = {}
         self.usercfg = self.settings["user"]
@@ -120,6 +122,7 @@ class MainApp(tk.Tk):
         else:
             self.usercfg["ModsDir"] = self.mods_dir.get()
         self.usercfg["EGMode"] = str(self.eg_mode.get())
+        self.usercfg["UseSymlinks"] = str(self.use_symlinks.get())
         filename = "settings.ini"
         with open(filename, "w") as config_file:
             self.settings.write(config_file)
@@ -164,6 +167,17 @@ class MainApp(tk.Tk):
         if is_dir:
             if dest.name.lower() != "mods":
                 msg.showerror("Activate", "Invalid path: Mods path must lead to a folder called 'mods'")
+                return
+            if self.use_symlinks.get():
+                up_path = Path(dest.joinpath("Labs_Underpass_P.upk"))
+                if up_path.exists():
+                    up_path.unlink()
+                try:
+                    up_path.symlink_to(src)
+                except OSError as e:
+                    msg.showerror("Activate", f"Couldn't create symlink. Full Python exception:\n{repr(e)}")
+                    return
+                msg.showinfo("Activate", "Symlink successfully created in mods")
                 return
             copyfile(
                 src,
@@ -340,6 +354,14 @@ class MainApp(tk.Tk):
         self.widgets["e_mdir"].delete(0, tk.END)
         self.widgets["e_mdir"].insert(0, path)
 
+    def symlinkwarning(self):
+        if self.use_symlinks.get():
+            msg.showwarning(
+                "Use Symlinks",
+                "Symlinks will only be created if RLMapLoader is run with admin privileges, or Developer Mode is "
+                "enabled in Windows. Only use this if you know what you're doing."
+            )
+
     def _initwidgets(self):
         """Initialise widgets."""
 
@@ -483,6 +505,13 @@ class MainApp(tk.Tk):
             offvalue=0,
             onvalue=1,
             command=self.changemode,
+        )
+        self.optionsmenu.add_checkbutton(
+            label="Use symlinks",
+            var=self.use_symlinks,
+            offvalue=0,
+            onvalue=1,
+            command=self.symlinkwarning,
         )
         self.optionsmenu.add_separator()
         self.optionsmenu.add_command(
