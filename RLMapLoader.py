@@ -1,7 +1,7 @@
 from collections import OrderedDict
+from configparser import ConfigParser
 from functools import partial
 from itertools import chain
-import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
@@ -56,6 +56,7 @@ class MainApp(tk.Tk):
         self.title("RLMapLoader")
         self.iconbitmap("icon.ico")
         self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.onclose)
 
         self.loadcfg()
         self.eg_mode = tk.IntVar(value=self.usercfg.getint("EGMode"))
@@ -92,6 +93,43 @@ class MainApp(tk.Tk):
             widget.config(style="TEntry")
         else:
             widget.config(style="R.TEntry")
+
+    def onclose(self):
+        self.savecfg()
+        self.destroy()
+
+    def loadcfg(self):
+        filename = "settings.ini"
+        self.settings = ConfigParser()
+        if Path(filename).exists():
+            self.settings.read("settings.ini")
+        else:
+            self.settings["DEFAULT"] = {
+                "workshopdir": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
+                "modsdir": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
+                "egmodsdir": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
+                "egmode": 0,
+            }
+            self.settings["user"] = {}
+        self.usercfg = self.settings["user"]
+
+    def savecfg(self):
+        self.usercfg["WorkshopDir"] = self.workshop_dir.get()
+        if self.eg_mode.get():
+            self.usercfg["EGModsDir"] = self.mods_dir.get()
+        else:
+            self.usercfg["ModsDir"] = self.mods_dir.get()
+        self.usercfg["EGMode"] = str(self.eg_mode.get())
+        filename = "settings.ini"
+        with open(filename, "w") as config_file:
+            self.settings.write(config_file)
+
+    def changemode(self, *args, **kwargs):
+        self.widgets["e_mdir"].delete(0, tk.END)
+        if self.eg_mode.get():
+            self.widgets["e_mdir"].insert(0, self.usercfg["EGModsDir"])
+        else:
+            self.widgets["e_mdir"].insert(0, self.usercfg["ModsDir"])
 
     def getselected(self):
         """Return the name and path of the selected map.
@@ -323,7 +361,6 @@ class MainApp(tk.Tk):
         )
         self.workshop_dir.trace("w", multi(
             partial(self.checkdir, self.widgets["e_wkdir"]),
-            self.savedirs,
             self.fillwslist,
         ))
         self.widgets["e_wkdir"].grid(row=0, column=1)
@@ -337,10 +374,7 @@ class MainApp(tk.Tk):
             textvariable=self.mods_dir,
             width=60
         )
-        self.mods_dir.trace("w", multi(
-            partial(self.checkdir, self.widgets["e_mdir"]),
-            self.savedirs,
-        ))
+        self.mods_dir.trace("w", partial(self.checkdir, self.widgets["e_mdir"]))
         self.widgets["e_mdir"].grid(row=1, column=1)
         self.checkdir(self.widgets["e_mdir"])
 
@@ -447,12 +481,13 @@ class MainApp(tk.Tk):
             label="Epic Games mode",
             var=self.eg_mode,
             offvalue=0,
-            onvalue=1
+            onvalue=1,
+            command=self.changemode,
         )
         self.optionsmenu.add_separator()
         self.optionsmenu.add_command(
             label="Exit",
-            command=self.destroy
+            command=self.onclose,
         )
 
         self.topmenu.add_cascade(label="Options", menu=self.optionsmenu)
