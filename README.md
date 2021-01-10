@@ -20,12 +20,17 @@ Once the directories are correct, the workshop maps should populate a list. Read
 ### Epic Games users
 
 The workshop directory should be set to any folder containing your custom maps. For users who also have the Steam version of Rocket League, the Steam workshop folder can also still be used.\
-The mods directory should be set similarly to the Steam instructions. A default EG directory can be set by clicking on **Options > Epic Games mode** and clicking **Defaults**. From there, you likely only need to change the drive letter and/or click **Make Mods Folder**.\
+The mods directory should be set similarly to the Steam instructions. A default EG directory can be set by clicking on **Options > Epic Games mode**. From there, you likely only need to change the drive letter and/or click **Make Mods Folder**.\
 Once the directories are correct, the workshop maps should populate a list. Ready a map by selecting it from the list, and clicking **Activate**.
 
 ### Launching the selected map
 
 To launch the map that you activated, you must load Underpass in Training, Exhibition or Local Lobby.
+
+### Symbolic link mode
+
+Version 1.1.0 adds the option of creating symbolic links instead of copying files. This is faster and less taxing on your storage device. However, symlink mode requires administrator privileges or for Developer Mode to be enabled in Windows. Symlink mode is therefore not required, and you should only take either of those actions if you feel comfortable.
+To activate symlink mode, click on **Options > Symlink mode**.
 
 ## Python Source Setup
 
@@ -68,6 +73,6 @@ You should now be able to run RLMapLoader by double clicking 'RLMapLoader.py', o
 ### Python
 
 - Windows 10 (might work on older versions)
-- Python 3.x (tested on Python 3.7.8 and 3.8.4)
+- Python 3.x (Python 3.8 or higher is reuired for symlinks to work)
 - Tkinter
 - PIL (`pip install pillow`)
