@@ -168,10 +168,10 @@ class MainApp(tk.Tk):
             if dest.name.lower() != "mods":
                 msg.showerror("Activate", "Invalid path: Mods path must lead to a folder called 'mods'")
                 return
+            up_path = Path(dest.joinpath("Labs_Underpass_P.upk"))
+            if up_path.exists():
+                up_path.unlink()
             if self.use_symlinks.get():
-                up_path = Path(dest.joinpath("Labs_Underpass_P.upk"))
-                if up_path.exists():
-                    up_path.unlink()
                 try:
                     up_path.symlink_to(src)
                 except OSError as e:
