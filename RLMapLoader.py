@@ -12,41 +12,6 @@ import webbrowser
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 
-def getdirs():
-    """Update MODS_DIR and WORKSHOP_DIR using saved dirs
-
-    Get directories saved in dirs.json if it exists in the correct format, else use defaults and create the file.
-    Sets MODS_DIR and WORKSHOP_DIR and has no return value.
-    """
-
-    global MODS_DIR
-    global WORKSHOP_DIR
-
-    try:
-        with open("dirs.json", "r") as f:
-            dirs_dict = json.load(f)
-            if type(dirs_dict) != dict:
-                raise json.JSONDecodeError
-    except (json.JSONDecodeError, FileNotFoundError):
-        dirs_dict = default_dirs
-        savedirs(mods=dirs_dict["MODS_DIR"], workshop=dirs_dict["WORKSHOP_DIR"])
-
-    MODS_DIR = dirs_dict["MODS_DIR"]
-    WORKSHOP_DIR = dirs_dict["WORKSHOP_DIR"]
-
-
-def savedirs(mods=None, workshop=None):
-    """Save mods and workshop directories to dirs.json"""
-
-    dirs_dict = {
-        "MODS_DIR": mods if mods is not None else MODS_DIR,
-        "WORKSHOP_DIR": workshop if workshop is not None else WORKSHOP_DIR,
-    }
-
-    with open("dirs.json", "w") as f:
-        json.dump(dirs_dict, f)
-
-
 def warnwrap(f):
     """Wrap a widget callback to raise a warning.
 
@@ -79,16 +44,7 @@ def multi(*funcs):
     return many_func
 
 
-MODS_DIR = ""
-WORKSHOP_DIR = ""
 HELP_URL = "https://github.com/mishnea/RLMapLoader#usage"
-
-
-default_dirs = {
-    "WORKSHOP_DIR": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
-    "MODS_DIR": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
-    "EG_MODS_DIR": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
-}
 
 
 class MainApp(tk.Tk):
@@ -101,9 +57,13 @@ class MainApp(tk.Tk):
         self.iconbitmap("icon.ico")
         self.resizable(False, False)
 
-        self.eg_mode = tk.IntVar(value=0)
-        self.mods_dir = tk.StringVar(value=MODS_DIR)
-        self.workshop_dir = tk.StringVar(value=WORKSHOP_DIR)
+        self.loadcfg()
+        self.eg_mode = tk.IntVar(value=self.usercfg.getint("EGMode"))
+        self.workshop_dir = tk.StringVar(value=self.usercfg["WorkshopDir"])
+        if self.eg_mode.get():
+            self.mods_dir = tk.StringVar(value=self.usercfg["EGModsDir"])
+        else:
+            self.mods_dir = tk.StringVar(value=self.usercfg["ModsDir"])
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
         self.img_size = (240, 158)
@@ -236,14 +196,6 @@ class MainApp(tk.Tk):
         else:
             msg.showerror("Open Folder", f"Can't open folder. \"{path}\" is not a valid directory.")
 
-    def savedirs(self, *args):
-        """Call global savedirs function with the entry widget values."""
-
-        savedirs(
-            self.mods_dir.get(),
-            self.workshop_dir.get(),
-        )
-
     def setdefaults(self, *args):
         """Set entry widget values to the paths in default_dirs."""
 
@@ -251,10 +203,10 @@ class MainApp(tk.Tk):
         self.widgets["e_mdir"].delete(0, tk.END)
 
         if self.eg_mode.get():
-            self.widgets["e_mdir"].insert(0, default_dirs["EG_MODS_DIR"])
+            self.widgets["e_mdir"].insert(0, self.settings["DEFAULT"]["EGModsDir"])
         else:
-            self.widgets["e_mdir"].insert(0, default_dirs["MODS_DIR"])
-        self.widgets["e_wkdir"].insert(0, default_dirs["WORKSHOP_DIR"])
+            self.widgets["e_mdir"].insert(0, self.settings["DEFAULT"]["ModsDir"])
+        self.widgets["e_wkdir"].insert(0, self.settings["DEFAULT"]["WorkshopDir"])
 
     def gendefaultimg(self, text):
         """Generate image to use when no preview image is available.
@@ -512,7 +464,6 @@ class MainApp(tk.Tk):
 def start():
     """Start the program."""
 
-    getdirs()
     # Catch object to avoid garbage collection.
     app = MainApp() # noqa
     app.mainloop()
