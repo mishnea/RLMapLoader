@@ -1,7 +1,7 @@
 from collections import OrderedDict
+from configparser import ConfigParser
 from functools import partial
 from itertools import chain
-import json
 from pathlib import Path
 from shutil import copyfile
 import tkinter as tk
@@ -10,41 +10,6 @@ import tkinter.messagebox as msg
 import webbrowser
 
 from PIL import Image, ImageTk, ImageDraw, ImageFont
-
-
-def getdirs():
-    """Update MODS_DIR and WORKSHOP_DIR using saved dirs
-
-    Get directories saved in dirs.json if it exists in the correct format, else use defaults and create the file.
-    Sets MODS_DIR and WORKSHOP_DIR and has no return value.
-    """
-
-    global MODS_DIR
-    global WORKSHOP_DIR
-
-    try:
-        with open("dirs.json", "r") as f:
-            dirs_dict = json.load(f)
-            if type(dirs_dict) != dict:
-                raise json.JSONDecodeError
-    except (json.JSONDecodeError, FileNotFoundError):
-        dirs_dict = default_dirs
-        savedirs(mods=dirs_dict["MODS_DIR"], workshop=dirs_dict["WORKSHOP_DIR"])
-
-    MODS_DIR = dirs_dict["MODS_DIR"]
-    WORKSHOP_DIR = dirs_dict["WORKSHOP_DIR"]
-
-
-def savedirs(mods=None, workshop=None):
-    """Save mods and workshop directories to dirs.json"""
-
-    dirs_dict = {
-        "MODS_DIR": mods if mods is not None else MODS_DIR,
-        "WORKSHOP_DIR": workshop if workshop is not None else WORKSHOP_DIR,
-    }
-
-    with open("dirs.json", "w") as f:
-        json.dump(dirs_dict, f)
 
 
 def warnwrap(f):
@@ -79,16 +44,7 @@ def multi(*funcs):
     return many_func
 
 
-MODS_DIR = ""
-WORKSHOP_DIR = ""
 HELP_URL = "https://github.com/mishnea/RLMapLoader#usage"
-
-
-default_dirs = {
-    "WORKSHOP_DIR": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
-    "MODS_DIR": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
-    "EG_MODS_DIR": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
-}
 
 
 class MainApp(tk.Tk):
@@ -100,10 +56,15 @@ class MainApp(tk.Tk):
         self.title("RLMapLoader")
         self.iconbitmap("icon.ico")
         self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.onclose)
 
-        self.eg_mode = tk.IntVar(value=0)
-        self.mods_dir = tk.StringVar(value=MODS_DIR)
-        self.workshop_dir = tk.StringVar(value=WORKSHOP_DIR)
+        self.loadcfg()
+        self.eg_mode = tk.IntVar(value=self.usercfg.getint("EGMode"))
+        self.workshop_dir = tk.StringVar(value=self.usercfg["WorkshopDir"])
+        if self.eg_mode.get():
+            self.mods_dir = tk.StringVar(value=self.usercfg["EGModsDir"])
+        else:
+            self.mods_dir = tk.StringVar(value=self.usercfg["ModsDir"])
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
         self.img_size = (240, 158)
@@ -132,6 +93,43 @@ class MainApp(tk.Tk):
             widget.config(style="TEntry")
         else:
             widget.config(style="R.TEntry")
+
+    def onclose(self):
+        self.savecfg()
+        self.destroy()
+
+    def loadcfg(self):
+        filename = "settings.ini"
+        self.settings = ConfigParser()
+        if Path(filename).exists():
+            self.settings.read("settings.ini")
+        else:
+            self.settings["DEFAULT"] = {
+                "workshopdir": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
+                "modsdir": "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/TAGame/CookedPCConsole/mods",
+                "egmodsdir": "C:/Program Files/Epic Games/rocketleague/TAGame/CookedPCConsole/mods",
+                "egmode": 0,
+            }
+            self.settings["user"] = {}
+        self.usercfg = self.settings["user"]
+
+    def savecfg(self):
+        self.usercfg["WorkshopDir"] = self.workshop_dir.get()
+        if self.eg_mode.get():
+            self.usercfg["EGModsDir"] = self.mods_dir.get()
+        else:
+            self.usercfg["ModsDir"] = self.mods_dir.get()
+        self.usercfg["EGMode"] = str(self.eg_mode.get())
+        filename = "settings.ini"
+        with open(filename, "w") as config_file:
+            self.settings.write(config_file)
+
+    def changemode(self, *args, **kwargs):
+        self.widgets["e_mdir"].delete(0, tk.END)
+        if self.eg_mode.get():
+            self.widgets["e_mdir"].insert(0, self.usercfg["EGModsDir"])
+        else:
+            self.widgets["e_mdir"].insert(0, self.usercfg["ModsDir"])
 
     def getselected(self):
         """Return the name and path of the selected map.
@@ -236,14 +234,6 @@ class MainApp(tk.Tk):
         else:
             msg.showerror("Open Folder", f"Can't open folder. \"{path}\" is not a valid directory.")
 
-    def savedirs(self, *args):
-        """Call global savedirs function with the entry widget values."""
-
-        savedirs(
-            self.mods_dir.get(),
-            self.workshop_dir.get(),
-        )
-
     def setdefaults(self, *args):
         """Set entry widget values to the paths in default_dirs."""
 
@@ -251,10 +241,10 @@ class MainApp(tk.Tk):
         self.widgets["e_mdir"].delete(0, tk.END)
 
         if self.eg_mode.get():
-            self.widgets["e_mdir"].insert(0, default_dirs["EG_MODS_DIR"])
+            self.widgets["e_mdir"].insert(0, self.settings["DEFAULT"]["EGModsDir"])
         else:
-            self.widgets["e_mdir"].insert(0, default_dirs["MODS_DIR"])
-        self.widgets["e_wkdir"].insert(0, default_dirs["WORKSHOP_DIR"])
+            self.widgets["e_mdir"].insert(0, self.settings["DEFAULT"]["ModsDir"])
+        self.widgets["e_wkdir"].insert(0, self.settings["DEFAULT"]["WorkshopDir"])
 
     def gendefaultimg(self, text):
         """Generate image to use when no preview image is available.
@@ -371,7 +361,6 @@ class MainApp(tk.Tk):
         )
         self.workshop_dir.trace("w", multi(
             partial(self.checkdir, self.widgets["e_wkdir"]),
-            self.savedirs,
             self.fillwslist,
         ))
         self.widgets["e_wkdir"].grid(row=0, column=1)
@@ -385,10 +374,7 @@ class MainApp(tk.Tk):
             textvariable=self.mods_dir,
             width=60
         )
-        self.mods_dir.trace("w", multi(
-            partial(self.checkdir, self.widgets["e_mdir"]),
-            self.savedirs,
-        ))
+        self.mods_dir.trace("w", partial(self.checkdir, self.widgets["e_mdir"]))
         self.widgets["e_mdir"].grid(row=1, column=1)
         self.checkdir(self.widgets["e_mdir"])
 
@@ -495,12 +481,13 @@ class MainApp(tk.Tk):
             label="Epic Games mode",
             var=self.eg_mode,
             offvalue=0,
-            onvalue=1
+            onvalue=1,
+            command=self.changemode,
         )
         self.optionsmenu.add_separator()
         self.optionsmenu.add_command(
             label="Exit",
-            command=self.destroy
+            command=self.onclose,
         )
 
         self.topmenu.add_cascade(label="Options", menu=self.optionsmenu)
@@ -512,7 +499,6 @@ class MainApp(tk.Tk):
 def start():
     """Start the program."""
 
-    getdirs()
     # Catch object to avoid garbage collection.
     app = MainApp() # noqa
     app.mainloop()
