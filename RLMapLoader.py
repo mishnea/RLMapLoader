@@ -3,6 +3,7 @@ from configparser import ConfigParser
 from functools import partial
 from itertools import chain
 from pathlib import Path
+import re
 from shutil import copyfile
 import tkinter as tk
 from tkinter import ttk, filedialog
@@ -59,6 +60,7 @@ class MainApp(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.onclose)
 
         self.loadcfg()
+        self.search = tk.StringVar(value="")
         self.use_symlinks = tk.IntVar(value=self.usercfg.getint("UseSymlinks"))
         self.eg_mode = tk.IntVar(value=self.usercfg.getint("EGMode"))
         self.workshop_dir = tk.StringVar(value=self.usercfg["WorkshopDir"])
@@ -226,7 +228,9 @@ class MainApp(tk.Tk):
     def fillwslist(self, *args):
         """Fill listbox with workshop file names."""
 
-        self.wkfiles = self.getwkfiles()
+        pattern = f".*{re.escape(self.search.get())}.*"
+        self.wkfiles = {k: v for k, v in self.getwkfiles().items() if re.match(pattern, k, re.IGNORECASE)}
+
         widget = self.widgets["lb_wkfiles"]
         widget.delete(0, tk.END)
         widget.insert(tk.END, *self.wkfiles.keys())
@@ -436,11 +440,23 @@ class MainApp(tk.Tk):
         self.widgets["l_wkfiles"] = ttk.Label(self.frames["middle"], text="Workshop Files")
         self.widgets["l_wkfiles"].grid(row=0, column=1)
 
+        self.widgets["e_wksearch"] = ttk.Entry(
+            self.frames["middle"],
+            textvariable=self.search,
+        )
+        self.widgets["e_wksearch"].grid(row=1, column=1, sticky="we", pady=1)
+        self.search.trace("w", self.fillwslist)
+        self.widgets["e_wksearch"].bind(
+            "<FocusIn>",
+            lambda event: event.widget.delete(0, tk.END),
+        )
+
         self.widgets["s_wkfiles"] = ttk.Scrollbar(self.frames["middle"])
-        self.widgets["s_wkfiles"].grid(row=1, column=2, rowspan=3, sticky="ns")
+        self.widgets["s_wkfiles"].grid(row=2, column=2, rowspan=3, sticky="ns")
 
         self.widgets["lb_wkfiles"] = tk.Listbox(
             self.frames["middle"],
+            height=9,
             width=30,
             highlightthickness=-1,
             activestyle=tk.NONE,
@@ -451,7 +467,7 @@ class MainApp(tk.Tk):
         )
         self.widgets["s_wkfiles"].config(command=self.widgets["lb_wkfiles"].yview)
         self.widgets["lb_wkfiles"].insert(tk.END, *self.wkfiles.keys())
-        self.widgets["lb_wkfiles"].grid(row=1, column=1, rowspan=1)
+        self.widgets["lb_wkfiles"].grid(row=2, column=1, rowspan=1)
         self.widgets["lb_wkfiles"].bind("<Double-Button-1>", lambda event: self.copytolabs())
 
         width, height = self.img_size
@@ -464,10 +480,10 @@ class MainApp(tk.Tk):
             padx=5
         )
         self.changeimg()
-        self.widgets["l_preview"].grid(row=1, column=0, rowspan=1)
+        self.widgets["l_preview"].grid(row=1, column=0, rowspan=2)
 
         self.frames["middle.right"] = ttk.Frame(self.frames["middle"])
-        self.frames["middle.right"].grid(row=1, column=3)
+        self.frames["middle.right"].grid(row=1, column=3, rowspan=2)
 
         self.widgets["b_tolabs"] = ttk.Button(
             self.frames["middle.right"],

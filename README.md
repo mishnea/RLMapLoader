@@ -15,13 +15,15 @@ RLMapLoader is also designed to work for Epic Games (EG) users, who need to tran
 The workshop directory should be the same or similar to the one that appears by default. You will likely only have to change the drive letter.\
 The same goes for the mods directory. However, there is no folder called `mods` within `CookedPCConsole` by default. You can either create it manually, or by clicking **Make Mods Folder** when you've set the `CookedPCConsole` directory.\
 The default directories can be recovered at any time by clicking **Defaults**.\
-Once the directories are correct, the workshop maps should populate a list. Double click a map or select it from the list and click **Activate** to load it.
+Once the directories are correct, the workshop maps should populate a list. You can search for maps using the textbox above the list.
+Double click a map or select it from the list and click **Activate** to load it.
 
 ### Epic Games users
 
 The workshop directory should be set to any folder containing your custom maps. For users who also have the Steam version of Rocket League, the Steam workshop folder can also still be used.\
 The mods directory should be set similarly to the Steam instructions. A default EG directory can be set by clicking on **Options > Epic Games mode**. From there, you likely only need to change the drive letter and/or click **Make Mods Folder**.\
-Once the directories are correct, the workshop maps should populate a list. Double click a map or select it from the list and click **Activate** to load it.
+Once the directories are correct, the workshop maps should populate a list. You can search for maps using the textbox above the list.
+Double click a map or select it from the list and click **Activate** to load it.
 
 ### Launching the selected map
 
