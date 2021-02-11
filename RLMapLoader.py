@@ -452,6 +452,7 @@ class MainApp(tk.Tk):
         self.widgets["s_wkfiles"].config(command=self.widgets["lb_wkfiles"].yview)
         self.widgets["lb_wkfiles"].insert(tk.END, *self.wkfiles.keys())
         self.widgets["lb_wkfiles"].grid(row=1, column=1, rowspan=1)
+        self.widgets["lb_wkfiles"].bind("<Double-Button-1>", lambda event: self.copytolabs())
 
         width, height = self.img_size
         self.widgets["l_preview"] = tk.Label(
