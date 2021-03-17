@@ -81,8 +81,8 @@ class MainApp(tk.Tk):
         self.wkfiles = self.getwkfiles()
         # Size for preview image.
         self.img_size = (240, 158)
-        # Generate a default image to be used for preview.
-        self.img_default = self.gendefaultimg("No preview")
+        # Get a default image to be used for preview.
+        self.img_default = self.getdefaultimg("default.png", alt_text="No preview")
         self.modfiles = {}
         self.frames = {}
         self.widgets = {}
@@ -276,20 +276,29 @@ class MainApp(tk.Tk):
             self.widgets["e_mdir"].insert(0, self.settings["DEFAULT"]["ModsDir"])
         self.widgets["e_wkdir"].insert(0, self.settings["DEFAULT"]["WorkshopDir"])
 
-    def gendefaultimg(self, text):
-        """Generate image to use when no preview image is available.
+    def getdefaultimg(self, filename, alt_text):
+        """Gets an image to use when no preview image is available.
 
-        Creates a default image to use when no preview image is found in the selected map's folder or none is selected.
-        The image has a transparent background and black text specified by 'text'.
+        Gets a default image to use when no preview image is found in the selected map's folder or none is selected.
+        filename - name of default image file to get
+        alt_text - text to use when generating image if the file is not found
         """
 
+        # Get default image from file
+        path = Path(filename)
+        if path.is_file():
+            im = Image.open(path)
+            im.thumbnail(self.img_size)
+            return ImageTk.PhotoImage(im)
+
+        # Generate a default image from alt_text
         try:
             font = ImageFont.truetype("arial", 20)
         except OSError:
             font = ImageFont.load_default()
         img = Image.new("RGBA", self.img_size, (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        d.text((70, 66), text, (0, 0, 0, 255), font=font)
+        d.text((70, 66), alt_text, (0, 0, 0, 255), font=font)
         return ImageTk.PhotoImage(img)
 
     def changeimg(self):
@@ -302,16 +311,28 @@ class MainApp(tk.Tk):
 
         selection = self.getselected()
         # Load default.png if it exists, else list is empty.
-        images = list(Path("").glob("default.png"))
+        images = list()
         if selection:
             path = selection[1].parent
             for ext in filetypes:
                 images.extend(Path(path).glob(ext))
-        if images:
-            im = Image.open(images[-1])
             size = self.img_size
-            im.thumbnail(size)
-            self.image = ImageTk.PhotoImage(im)
+            if images:
+                im = Image.open(images[-1])
+                im.thumbnail(size)
+                self.image = ImageTk.PhotoImage(im)
+            elif CACHE_FOLDER.joinpath(path.name + ".png").is_file():
+                im = Image.open(CACHE_FOLDER.joinpath(path.name + ".png"))
+                self.image = ImageTk.PhotoImage(im)
+            else:
+                try:
+                    workshop_id = path.name
+                    im = WorkshopItem(workshop_id).get_img()
+                    im.thumbnail(size)
+                    im.save(CACHE_FOLDER.joinpath(workshop_id + ".png"), format="PNG")
+                    self.image = ImageTk.PhotoImage(im)
+                except ItemNotFoundError:
+                    self.image = self.img_default
         else:
             self.image = self.img_default
         self.widgets["l_preview"].configure(image=self.image)
