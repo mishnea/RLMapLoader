@@ -50,6 +50,13 @@ def multi(*funcs):
 
 HELP_URL = "https://github.com/mishnea/RLMapLoader#usage"
 
+# Appdata Folders
+APPDATA_FOLDER = Path(os.getenv("appdata"), "RLMapLoader")
+APPDATA_FOLDER.mkdir(exist_ok=True)
+
+CACHE_FOLDER = APPDATA_FOLDER.joinpath("imgcache")
+CACHE_FOLDER.mkdir(exist_ok=True)
+
 
 class MainApp(tk.Tk):
     """Class defining app behaviour. Acts as a tkinter frame."""
@@ -106,9 +113,10 @@ class MainApp(tk.Tk):
 
     def loadcfg(self):
         filename = "settings.ini"
+        path = APPDATA_FOLDER.joinpath(filename)
         self.settings = ConfigParser()
-        if Path(filename).exists():
-            self.settings.read("settings.ini")
+        if path.exists():
+            self.settings.read(path)
         else:
             self.settings["DEFAULT"] = {
                 "workshopdir": "C:/Program Files (x86)/Steam/steamapps/workshop/content/252950",
@@ -129,7 +137,8 @@ class MainApp(tk.Tk):
         self.usercfg["EGMode"] = str(self.eg_mode.get())
         self.usercfg["UseSymlinks"] = str(self.use_symlinks.get())
         filename = "settings.ini"
-        with open(filename, "w") as config_file:
+        path = APPDATA_FOLDER.joinpath(filename)
+        with open(path, "w") as config_file:
             self.settings.write(config_file)
 
     def changemode(self, *args, **kwargs):
