@@ -7,8 +7,6 @@
 # Python
 __pycache__/
 *.pyc
-# Program Settings
-*.ini
 # PyInstaller
 *.spec
 build/
