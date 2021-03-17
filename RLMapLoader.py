@@ -15,6 +15,7 @@ from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 from scraper import WorkshopItem, ItemNotFoundError
 
+
 def warnwrap(f):
     """Wrap a widget callback to raise a warning.
 
