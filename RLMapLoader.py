@@ -2,6 +2,7 @@ from collections import OrderedDict
 from configparser import ConfigParser
 from functools import partial
 from itertools import chain
+import os
 from pathlib import Path
 import re
 from shutil import copyfile
@@ -11,6 +12,8 @@ import tkinter.messagebox as msg
 import webbrowser
 
 from PIL import Image, ImageTk, ImageDraw, ImageFont
+
+from scraper import WorkshopItem, ItemNotFoundError
 
 
 def warnwrap(f):
